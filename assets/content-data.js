@@ -266,6 +266,17 @@ window.MHY_CONTENT = {
       "cover": "https://i.ytimg.com/vi/CEGS1SpCVbo/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=CEGS1SpCVbo",
       "status": "published"
+    },
+    {
+      "id": "the-impossible-decision-part-1",
+      "category": "films",
+      "titleAr": "القرار المستحيل — الجزء الأول",
+      "titleEn": "The Impossible Decision — Part One",
+      "descriptionAr": "الجزء الأول من فيلم «القرار المستحيل» — إنتاج MHYPRODUCTION.",
+      "descriptionEn": "Part one of The Impossible Decision — a MHYPRODUCTION film.",
+      "cover": "https://i.ytimg.com/vi/p5zN1PBx8FE/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=p5zN1PBx8FE",
+      "status": "published"
     }
   ],
   "series": []
