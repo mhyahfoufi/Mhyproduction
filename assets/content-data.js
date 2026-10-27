@@ -277,6 +277,17 @@ window.MHY_CONTENT = {
       "cover": "https://i.ytimg.com/vi/p5zN1PBx8FE/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=p5zN1PBx8FE",
       "status": "published"
+    },
+    {
+      "id": "short-ZRvTJkOK6HQ",
+      "category": "trailers",
+      "titleAr": "فيلم القرار المستحيل — تصفية حسابات أمير مع العصابات",
+      "titleEn": "The Impossible Decision — Amir Settles Scores with the Gangs",
+      "descriptionAr": "مقطع Shorts من فيلم «القرار المستحيل» — MHYPRODUCTION.",
+      "descriptionEn": "A YouTube Short from The Impossible Decision — MHYPRODUCTION.",
+      "cover": "https://i.ytimg.com/vi/ZRvTJkOK6HQ/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
+      "status": "published"
     }
   ],
   "series": []
