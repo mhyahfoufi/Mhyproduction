@@ -113,44 +113,20 @@
     const langButton=document.getElementById('lang');
     langButton.addEventListener('click',()=>{const english=document.body.classList.toggle('english');document.documentElement.lang=english?'en':'ar';document.documentElement.dir=english?'ltr':'rtl';langButton.textContent=english?'عربي':'EN';});
     document.getElementById('year').textContent=new Date().getFullYear();
-  </script><!-- MHY AI FAQ widget: paste just before </body> in index.html -->
-<style>
-#mhy-ai-launch{position:fixed;bottom:92px;left:18px;z-index:1000;background:#17233a;color:#f3bb63;border:1px solid #f3bb63;border-radius:999px;padding:12px 16px;font:700 14px system-ui;cursor:pointer;box-shadow:0 5px 22px #0008}
-#mhy-ai-panel{position:fixed;bottom:150px;left:18px;z-index:1001;width:min(370px,calc(100vw - 36px));max-height:min(540px,70vh);display:none;flex-direction:column;background:#111521;color:#fff;border:1px solid #f3bb63;border-radius:16px;box-shadow:0 15px 50px #000b;overflow:hidden;font:14px/1.6 system-ui;direction:rtl}
-#mhy-ai-panel.open{display:flex}
-#mhy-ai-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:#1c2840;color:#f3bb63;font-weight:800}
-#mhy-ai-close{background:transparent;color:white;border:0;font-size:25px;cursor:pointer}
-#mhy-ai-log{overflow:auto;padding:14px;min-height:125px;max-height:260px;display:flex;flex-direction:column;gap:9px}
-.mhy-ai-msg{padding:9px 12px;border-radius:12px;background:#283349;white-space:pre-wrap}
-.mhy-ai-msg.user{background:#254a46;align-self:flex-start}
-#mhy-ai-questions{padding:12px;display:grid;gap:7px;overflow:auto}
-#mhy-ai-questions button{background:#202d44;color:#fff;border:1px solid #45516b;border-radius:9px;padding:9px;text-align:right;cursor:pointer;font:inherit}
-#mhy-ai-questions button:hover,#mhy-ai-questions button:focus-visible{border-color:#f3bb63}
-#mhy-ai-log a{color:#f3bb63;text-decoration:underline}
-@media(max-width:480px){#mhy-ai-launch{bottom:92px;left:12px}#mhy-ai-panel{left:10px;bottom:150px;width:calc(100vw - 20px);max-height:65vh}}
-</style>
-<button id="mhy-ai-launch" type="button" aria-controls="mhy-ai-panel" aria-expanded="false">🤖 MHY AI</button>
-<section id="mhy-ai-panel" role="dialog" aria-label="مساعد MHYPRODUCTION" aria-modal="false">
-  <div id="mhy-ai-head"><span>🤖 MHY AI — مساعد الموقع</span><button id="mhy-ai-close" type="button" aria-label="إغلاق المساعد">×</button></div>
-  <div id="mhy-ai-log" role="log" aria-live="polite"><div class="mhy-ai-msg">أهلاً بك في MHYPRODUCTION! أنا مساعد بإجابات جاهزة. اختر سؤالك من القائمة.</div></div>
-  <div id="mhy-ai-questions" aria-label="الأسئلة المتاحة"></div>
-</section>
-<script>
-(()=>{
- const launch=document.getElementById('mhy-ai-launch'),panel=document.getElementById('mhy-ai-panel'),close=document.getElementById('mhy-ai-close'),log=document.getElementById('mhy-ai-log'),questions=document.getElementById('mhy-ai-questions');
- const items=[
-  {q:'🎬 أين أشاهد أفلامكم؟',a:'يمكنك متابعة أعمال MHYPRODUCTION المتاحة على قناتنا في يوتيوب.',link:'https://youtube.com/@mhyproduction-u9i',label:'زيارة يوتيوب'},
-  {q:'🎵 كيف أتابع الأغاني؟',a:'تابع قناة MHY PRODUCTION MUSIC على واتساب للحصول على أخبار الموسيقى.',link:'https://whatsapp.com/channel/0029Vb93hsJCBtxEb99jjH22',label:'قناة الموسيقى'},
-  {q:'📱 كيف أتواصل معكم؟',a:'يمكنك التواصل مباشرة مع إدارة MHYPRODUCTION عبر واتساب.',link:'https://wa.me/96176682043',label:'فتح واتساب'},
-  {q:'🤖 ما هي MHYPRODUCTION؟',a:'MHYPRODUCTION استوديو إبداعي لإنتاج القصص والأفلام والأغاني والمشاهد باستخدام تقنيات الذكاء الاصطناعي.'},
-  {q:'🌍 ما لغات أعمالكم؟',a:'نقدم محتوى إبداعياً بلغات متعددة بحسب طبيعة كل مشروع.'}
- ];
- function message(t,who,link,label){const d=document.createElement('div');d.className='mhy-ai-msg'+(who==='user'?' user':'');d.textContent=t;if(link){const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener noreferrer';a.textContent='↗ '+label;d.appendChild(document.createElement('br'));d.appendChild(a)}log.appendChild(d);log.scrollTop=log.scrollHeight}
- items.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.q;b.addEventListener('click',()=>{message(item.q,'user');message(item.a,'bot',item.link,item.label)});questions.appendChild(b)});
- function toggle(open){panel.classList.toggle('open',open);launch.setAttribute('aria-expanded',String(open));if(open)close.focus();else launch.focus()}
- launch.addEventListener('click',()=>toggle(!panel.classList.contains('open')));close.addEventListener('click',()=>toggle(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))toggle(false)});
-})();
-</script>
+  </script><script src="assets/content-data.js?v=assistant-1"></script>
+<!-- MHY AI site guide -->
+<link rel="stylesheet" href="assets/mhy-assistant.css?v=1">
+<div id="mhy-assistant" dir="rtl">
+  <button class="mhy-chat-launch" type="button" aria-controls="mhy-chat-panel" aria-expanded="false">🤖 MHY AI</button>
+  <div class="mhy-chat-panel" id="mhy-chat-panel" role="dialog" aria-modal="false" aria-label="MHY AI" hidden>
+    <header><strong class="mhy-chat-title">MHY AI</strong><button class="mhy-chat-close" type="button" aria-label="إغلاق المساعد">×</button></header>
+    <p class="mhy-chat-note"></p>
+    <div class="mhy-chat-log" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="mhy-chat-suggestions"></div>
+    <form><input type="text" maxlength="180" autocomplete="off" aria-label="اكتب سؤالك"><button type="submit">إرسال</button></form>
+  </div>
+</div>
+<script src="assets/mhy-assistant.js?v=1"></script>
 
 </body>
 </html>
