@@ -92,6 +92,107 @@ window.MHY_CONTENT = {
       "number": "10"
     }
   ],
-  "items": [],
+  "items": [
+    {
+      "id": "film-image-1000747822",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 1",
+      "titleEn": "Film gallery — 1",
+      "image": "images/films/1000747822.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 1",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000748387",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 2",
+      "titleEn": "Film gallery — 2",
+      "image": "images/films/1000748387.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 2",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000747266",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 3",
+      "titleEn": "Film gallery — 3",
+      "image": "images/films/1000747266.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 3",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000747265",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 4",
+      "titleEn": "Film gallery — 4",
+      "image": "images/films/1000747265.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 4",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000747263",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 5",
+      "titleEn": "Film gallery — 5",
+      "image": "images/films/1000747263.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 5",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000736915",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 6",
+      "titleEn": "Film gallery — 6",
+      "image": "images/films/1000736915.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 6",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000736914",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 7",
+      "titleEn": "Film gallery — 7",
+      "image": "images/films/1000736914.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 7",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000736919",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 8",
+      "titleEn": "Film gallery — 8",
+      "image": "images/films/1000736919.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 8",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000736922",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 9",
+      "titleEn": "Film gallery — 9",
+      "image": "images/films/1000736922.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 9",
+      "status": "published"
+    },
+    {
+      "id": "film-image-1000736923",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 10",
+      "titleEn": "Film gallery — 10",
+      "image": "images/films/1000736923.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 10",
+      "status": "published"
+    }
+  ],
   "series": []
 };
