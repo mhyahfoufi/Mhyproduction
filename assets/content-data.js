@@ -192,6 +192,17 @@ window.MHY_CONTENT = {
       "image": "images/films/1000736923.webp",
       "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 10",
       "status": "published"
+    },
+    {
+      "id": "rajeen-ya-darna",
+      "category": "music-videos",
+      "titleAr": "راجعين يا دارنا",
+      "titleEn": "Rajeen Ya Darna",
+      "descriptionAr": "إنتاج MHYPRODUCTION — كلمات وألحان محمد يحفوفي",
+      "descriptionEn": "MHYPRODUCTION — Lyrics and composition by Mohammad Yahfoufi",
+      "cover": "https://i.ytimg.com/vi/WongEZhvc_g/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WongEZhvc_g",
+      "status": "published"
     }
   ],
   "series": []
