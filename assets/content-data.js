@@ -203,6 +203,69 @@ window.MHY_CONTENT = {
       "cover": "https://i.ytimg.com/vi/WongEZhvc_g/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/watch?v=WongEZhvc_g",
       "status": "published"
+    },
+    {
+      "id": "youtube-Et3-f6Jl6r8",
+      "category": "music-videos",
+      "titleAr": "موسيقى هادئه عزف جيتار انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى هادئه عزف جيتار انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/Et3-f6Jl6r8/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Et3-f6Jl6r8",
+      "status": "published"
+    },
+    {
+      "id": "youtube-qIcy9xdapf4",
+      "category": "music-videos",
+      "titleAr": "اغنيه تركيا ديو انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه تركيا ديو انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/qIcy9xdapf4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=qIcy9xdapf4",
+      "status": "published"
+    },
+    {
+      "id": "youtube-ZEpJE68cGN4",
+      "category": "music-videos",
+      "titleAr": "اغنيه تركيه حزينه ديو انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه تركيه حزينه ديو انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/ZEpJE68cGN4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ZEpJE68cGN4",
+      "status": "published"
+    },
+    {
+      "id": "youtube-MdXOiPRQ3FY",
+      "category": "music-videos",
+      "titleAr": "اغنيه ديو عربي تركي ربما ما زلنا نحب2 انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه ديو عربي تركي ربما ما زلنا نحب2 انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/MdXOiPRQ3FY/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=MdXOiPRQ3FY",
+      "status": "published"
+    },
+    {
+      "id": "youtube-6mCrFUR63dk",
+      "category": "music-videos",
+      "titleAr": "اغنيه ديو ربما ما زلنا نحب انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه ديو ربما ما زلنا نحب انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/6mCrFUR63dk/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6mCrFUR63dk",
+      "status": "published"
+    },
+    {
+      "id": "youtube-mIEfJemmINE",
+      "category": "music-videos",
+      "titleAr": "موسيقى هادئه تريح الاعصاب انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى هادئه تريح الاعصاب انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/mIEfJemmINE/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mIEfJemmINE",
+      "status": "published"
+    },
+    {
+      "id": "youtube-CEGS1SpCVbo",
+      "category": "music-videos",
+      "titleAr": "موسيقى تاخذك الى عالم الخيال انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى تاخذك الى عالم الخيال انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/CEGS1SpCVbo/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=CEGS1SpCVbo",
+      "status": "published"
     }
   ],
   "series": []
