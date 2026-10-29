@@ -1,7 +1,13 @@
 {
-  "version": "preview-2",
+  "version": "malak-v2-stage-1",
   "visibility": "public-only",
-  "spoilerDefault": "off",
+  "spoilerDefault": "blocked",
+  "sourceCommit": "56595b52b4bbee98a09ee576d3daa54156e764cb",
+  "sources": [
+    "assets/content-data.js",
+    "index.html",
+    "CONTENT_GUIDE.md"
+  ],
   "studio": {
     "name": "MHYPRODUCTION",
     "descriptionAr": "استوديو لإنتاج القصص والأفلام والمسلسلات والأغاني والمحتوى المرئي باستخدام الذكاء الاصطناعي.",
@@ -10,179 +16,522 @@
   },
   "categories": [
     {
-      "id": "films",
-      "titleAr": "الأفلام الطويلة",
-      "titleEn": "Feature films",
-      "url": "../films.html",
-      "visibility": "public"
-    },
-    {
-      "id": "short-films",
-      "titleAr": "الأفلام القصيرة",
-      "titleEn": "Short films",
-      "url": "../short-films.html",
-      "visibility": "public"
+      "id": "audio",
+      "page": "audio.html",
+      "titleAr": "الأغاني الصوتية",
+      "titleEn": "Audio songs",
+      "descriptionAr": "صوت يحكي حكاية",
+      "descriptionEn": "Stories told through sound",
+      "number": "01",
+      "url": "../audio.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
     },
     {
       "id": "music-videos",
+      "page": "music-videos.html",
       "titleAr": "الفيديو كليبات",
       "titleEn": "Music videos",
+      "descriptionAr": "الموسيقى تلتقي بالصورة",
+      "descriptionEn": "Where music meets the screen",
+      "number": "02",
       "url": "../music-videos.html",
-      "visibility": "public"
-    },
-    {
-      "id": "audio",
-      "titleAr": "الأغاني الصوتية",
-      "titleEn": "Audio songs",
-      "url": "../audio.html",
-      "visibility": "public"
-    },
-    {
-      "id": "series",
-      "titleAr": "المسلسلات",
-      "titleEn": "Series",
-      "url": "../series.html",
-      "visibility": "public"
-    },
-    {
-      "id": "gallery",
-      "titleAr": "معرض الصور",
-      "titleEn": "Gallery",
-      "url": "../gallery.html",
-      "visibility": "public"
+      "visibility": "public",
+      "source": "assets/content-data.js"
     },
     {
       "id": "trailers",
-      "titleAr": "التريلرات والريلز",
-      "titleEn": "Trailers and reels",
+      "page": "trailers.html",
+      "titleAr": "مقاطع الأفلام والتريلرات والريلز",
+      "titleEn": "Trailers & reels",
+      "descriptionAr": "لمحات من عوالمنا السينمائية",
+      "descriptionEn": "Glimpses of our cinematic worlds",
+      "number": "03",
       "url": "../trailers.html",
-      "visibility": "public"
+      "visibility": "public",
+      "source": "assets/content-data.js"
     },
     {
-      "id": "soundtracks",
-      "titleAr": "أغاني الأفلام والمسلسلات",
-      "titleEn": "Soundtracks",
-      "url": "../soundtracks.html",
-      "visibility": "public"
+      "id": "series",
+      "page": "series.html",
+      "titleAr": "المسلسلات",
+      "titleEn": "Series",
+      "descriptionAr": "حكايات تتواصل، موسمًا بعد موسم",
+      "descriptionEn": "Stories unfolding, season by season",
+      "number": "04",
+      "url": "../series.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
+    },
+    {
+      "id": "films",
+      "page": "films.html",
+      "titleAr": "الأفلام الطويلة",
+      "titleEn": "Feature films",
+      "descriptionAr": "مساحة للحكايات السينمائية الكاملة",
+      "descriptionEn": "A home for full cinematic stories",
+      "number": "05",
+      "url": "../films.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
+    },
+    {
+      "id": "short-films",
+      "page": "short-films.html",
+      "titleAr": "الأفلام القصيرة",
+      "titleEn": "Short films",
+      "descriptionAr": "حكاية بدقائق — قصة كاملة وأثر يبقى",
+      "descriptionEn": "A story in minutes. An impression that stays.",
+      "number": "06",
+      "url": "../short-films.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
+    },
+    {
+      "id": "gallery",
+      "page": "gallery.html",
+      "titleAr": "معرض الصور",
+      "titleEn": "Image gallery",
+      "descriptionAr": "شخصيات وبوسترات وستوري بورد",
+      "descriptionEn": "Characters, posters & storyboards",
+      "number": "07",
+      "url": "../gallery.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
     },
     {
       "id": "studio-videos",
-      "titleAr": "فيديوهات الاستوديو",
-      "titleEn": "Studio videos",
+      "page": "studio-videos.html",
+      "titleAr": "فيديوهات الاستوديو الترويجية",
+      "titleEn": "Studio promotional videos",
+      "descriptionAr": "هوية MHYPRODUCTION في مشاهد",
+      "descriptionEn": "The studio identity in motion",
+      "number": "08",
       "url": "../studio-videos.html",
-      "visibility": "public"
+      "visibility": "public",
+      "source": "assets/content-data.js"
+    },
+    {
+      "id": "soundtracks",
+      "page": "soundtracks.html",
+      "titleAr": "أغاني الأفلام والمسلسلات",
+      "titleEn": "Film & series songs",
+      "descriptionAr": "لكل حكاية صوتها",
+      "descriptionEn": "Every story has its own sound",
+      "number": "09",
+      "url": "../soundtracks.html",
+      "visibility": "public",
+      "source": "assets/content-data.js"
     },
     {
       "id": "studio-music",
-      "titleAr": "أغاني الاستوديو",
-      "titleEn": "Studio music",
+      "page": "studio-music.html",
+      "titleAr": "أغاني وإعلانات MHYPRODUCTION",
+      "titleEn": "MHYPRODUCTION promotional music",
+      "descriptionAr": "أغانٍ وإعلانات موسيقية بهوية الاستوديو",
+      "descriptionEn": "Songs and musical ads made for our studio",
+      "number": "10",
       "url": "../studio-music.html",
-      "visibility": "public"
+      "visibility": "public",
+      "source": "assets/content-data.js"
     }
   ],
   "works": [
     {
       "id": "the-impossible-decision-part-1",
+      "category": "films",
       "titleAr": "القرار المستحيل — الجزء الأول",
       "titleEn": "The Impossible Decision — Part One",
-      "summaryAr": "الجزء الأول من فيلم «القرار المستحيل» من إنتاج MHYPRODUCTION.",
-      "summaryEn": "Part one of The Impossible Decision, a MHYPRODUCTION film.",
+      "descriptionAr": "الجزء الأول من فيلم «القرار المستحيل» — إنتاج MHYPRODUCTION.",
+      "descriptionEn": "Part one of The Impossible Decision — a MHYPRODUCTION film.",
+      "cover": "https://i.ytimg.com/vi/p5zN1PBx8FE/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=p5zN1PBx8FE",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=p5zN1PBx8FE",
-      "category": "films",
       "visibility": "public",
-      "status": "published"
+      "source": "assets/content-data.js#the-impossible-decision-part-1",
+      "summaryAr": "الجزء الأول من فيلم «القرار المستحيل» — إنتاج MHYPRODUCTION.",
+      "summaryEn": "Part one of The Impossible Decision — a MHYPRODUCTION film."
     },
     {
       "id": "short-ZRvTJkOK6HQ",
-      "titleAr": "القرار المستحيل — تصفية حسابات أمير مع العصابات",
-      "titleEn": "The Impossible Decision — Amir Settles Scores with the Gangs",
-      "summaryAr": "مقطع Shorts منشور من فيلم القرار المستحيل.",
-      "summaryEn": "A published Short from The Impossible Decision.",
-      "url": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
       "category": "trailers",
+      "titleAr": "فيلم القرار المستحيل — تصفية حسابات أمير مع العصابات",
+      "titleEn": "The Impossible Decision — Amir Settles Scores with the Gangs",
+      "descriptionAr": "مقطع Shorts من فيلم «القرار المستحيل» — MHYPRODUCTION.",
+      "descriptionEn": "A YouTube Short from The Impossible Decision — MHYPRODUCTION.",
+      "cover": "https://i.ytimg.com/vi/ZRvTJkOK6HQ/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
+      "status": "published",
+      "url": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
       "visibility": "public",
-      "status": "published"
+      "source": "assets/content-data.js#short-ZRvTJkOK6HQ",
+      "summaryAr": "مقطع Shorts من فيلم «القرار المستحيل» — MHYPRODUCTION.",
+      "summaryEn": "A YouTube Short from The Impossible Decision — MHYPRODUCTION."
     }
   ],
   "music": [
     {
       "id": "rajeen-ya-darna",
+      "category": "music-videos",
       "titleAr": "راجعين يا دارنا",
       "titleEn": "Rajeen Ya Darna",
+      "descriptionAr": "إنتاج MHYPRODUCTION — كلمات وألحان محمد يحفوفي",
+      "descriptionEn": "MHYPRODUCTION — Lyrics and composition by Mohammad Yahfoufi",
+      "cover": "https://i.ytimg.com/vi/WongEZhvc_g/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WongEZhvc_g",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=WongEZhvc_g",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#rajeen-ya-darna",
+      "summaryAr": "إنتاج MHYPRODUCTION — كلمات وألحان محمد يحفوفي",
+      "summaryEn": "MHYPRODUCTION — Lyrics and composition by Mohammad Yahfoufi",
+      "aliases": [
+        "راجعين يا دارنا",
+        "Rajeen Ya Darna"
+      ]
     },
     {
       "id": "youtube-Et3-f6Jl6r8",
-      "titleAr": "موسيقى هادئة عزف جيتار",
-      "titleEn": "Calm guitar music",
+      "category": "music-videos",
+      "titleAr": "موسيقى هادئه عزف جيتار انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى هادئه عزف جيتار انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/Et3-f6Jl6r8/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Et3-f6Jl6r8",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=Et3-f6Jl6r8",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-Et3-f6Jl6r8",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "موسيقى هادئة عزف جيتار",
+        "Calm guitar music"
+      ]
     },
     {
       "id": "youtube-qIcy9xdapf4",
-      "titleAr": "أغنية تركية ديو",
-      "titleEn": "Turkish duet",
+      "category": "music-videos",
+      "titleAr": "اغنيه تركيا ديو انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه تركيا ديو انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/qIcy9xdapf4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=qIcy9xdapf4",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=qIcy9xdapf4",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-qIcy9xdapf4",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "أغنية تركية ديو",
+        "Turkish duet"
+      ]
     },
     {
       "id": "youtube-ZEpJE68cGN4",
-      "titleAr": "أغنية تركية حزينة ديو",
-      "titleEn": "Sad Turkish duet",
+      "category": "music-videos",
+      "titleAr": "اغنيه تركيه حزينه ديو انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه تركيه حزينه ديو انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/ZEpJE68cGN4/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ZEpJE68cGN4",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=ZEpJE68cGN4",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-ZEpJE68cGN4",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "أغنية تركية حزينة ديو",
+        "Sad Turkish duet"
+      ]
     },
     {
       "id": "youtube-MdXOiPRQ3FY",
-      "titleAr": "ربما ما زلنا نحب 2 — ديو عربي تركي",
-      "titleEn": "Perhaps We Still Love 2",
+      "category": "music-videos",
+      "titleAr": "اغنيه ديو عربي تركي ربما ما زلنا نحب2 انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه ديو عربي تركي ربما ما زلنا نحب2 انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/MdXOiPRQ3FY/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=MdXOiPRQ3FY",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=MdXOiPRQ3FY",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-MdXOiPRQ3FY",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "ربما ما زلنا نحب 2 — ديو عربي تركي",
+        "Perhaps We Still Love 2"
+      ]
     },
     {
       "id": "youtube-6mCrFUR63dk",
-      "titleAr": "ربما ما زلنا نحب — ديو",
-      "titleEn": "Perhaps We Still Love",
+      "category": "music-videos",
+      "titleAr": "اغنيه ديو ربما ما زلنا نحب انتاج MHYPRODUCTION",
+      "titleEn": "اغنيه ديو ربما ما زلنا نحب انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/6mCrFUR63dk/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6mCrFUR63dk",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=6mCrFUR63dk",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-6mCrFUR63dk",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "ربما ما زلنا نحب — ديو",
+        "Perhaps We Still Love"
+      ]
     },
     {
       "id": "youtube-mIEfJemmINE",
-      "titleAr": "موسيقى هادئة تريح الأعصاب",
-      "titleEn": "Relaxing music",
+      "category": "music-videos",
+      "titleAr": "موسيقى هادئه تريح الاعصاب انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى هادئه تريح الاعصاب انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/mIEfJemmINE/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mIEfJemmINE",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=mIEfJemmINE",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-mIEfJemmINE",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "موسيقى هادئة تريح الأعصاب",
+        "Relaxing music"
+      ]
     },
     {
       "id": "youtube-CEGS1SpCVbo",
-      "titleAr": "موسيقى تأخذك إلى عالم الخيال",
-      "titleEn": "Fantasy music",
+      "category": "music-videos",
+      "titleAr": "موسيقى تاخذك الى عالم الخيال انتاج MHYPRODUCTION",
+      "titleEn": "موسيقى تاخذك الى عالم الخيال انتاج MHYPRODUCTION",
+      "cover": "https://i.ytimg.com/vi/CEGS1SpCVbo/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/watch?v=CEGS1SpCVbo",
+      "status": "published",
       "url": "https://www.youtube.com/watch?v=CEGS1SpCVbo",
       "visibility": "public",
-      "status": "published",
-      "category": "music-videos"
+      "source": "assets/content-data.js#youtube-CEGS1SpCVbo",
+      "summaryAr": "",
+      "summaryEn": "",
+      "aliases": [
+        "موسيقى تأخذك إلى عالم الخيال",
+        "Fantasy music"
+      ]
     }
   ],
-  "characters": [],
-  "relationships": [],
+  "gallery": [
+    {
+      "id": "film-image-1000747822",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 1",
+      "titleEn": "Film gallery — 1",
+      "image": "images/films/1000747822.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 1",
+      "status": "published",
+      "url": "../images/films/1000747822.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000747822",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000748387",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 2",
+      "titleEn": "Film gallery — 2",
+      "image": "images/films/1000748387.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 2",
+      "status": "published",
+      "url": "../images/films/1000748387.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000748387",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000747266",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 3",
+      "titleEn": "Film gallery — 3",
+      "image": "images/films/1000747266.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 3",
+      "status": "published",
+      "url": "../images/films/1000747266.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000747266",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000747265",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 4",
+      "titleEn": "Film gallery — 4",
+      "image": "images/films/1000747265.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 4",
+      "status": "published",
+      "url": "../images/films/1000747265.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000747265",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000747263",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 5",
+      "titleEn": "Film gallery — 5",
+      "image": "images/films/1000747263.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 5",
+      "status": "published",
+      "url": "../images/films/1000747263.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000747263",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000736915",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 6",
+      "titleEn": "Film gallery — 6",
+      "image": "images/films/1000736915.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 6",
+      "status": "published",
+      "url": "../images/films/1000736915.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000736915",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000736914",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 7",
+      "titleEn": "Film gallery — 7",
+      "image": "images/films/1000736914.png",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 7",
+      "status": "published",
+      "url": "../images/films/1000736914.png",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000736914",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000736919",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 8",
+      "titleEn": "Film gallery — 8",
+      "image": "images/films/1000736919.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 8",
+      "status": "published",
+      "url": "../images/films/1000736919.webp",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000736919",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000736922",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 9",
+      "titleEn": "Film gallery — 9",
+      "image": "images/films/1000736922.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 9",
+      "status": "published",
+      "url": "../images/films/1000736922.webp",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000736922",
+      "summaryAr": "",
+      "summaryEn": ""
+    },
+    {
+      "id": "film-image-1000736923",
+      "category": "gallery",
+      "group": "films",
+      "titleAr": "صور الأفلام — 10",
+      "titleEn": "Film gallery — 10",
+      "image": "images/films/1000736923.webp",
+      "altAr": "صورة من أعمال MHYPRODUCTION السينمائية — 10",
+      "status": "published",
+      "url": "../images/films/1000736923.webp",
+      "visibility": "public",
+      "source": "assets/content-data.js#film-image-1000736923",
+      "summaryAr": "",
+      "summaryEn": ""
+    }
+  ],
+  "series": [],
+  "characters": [
+    {
+      "id": "amir",
+      "nameAr": "أمير",
+      "nameEn": "Amir",
+      "aliases": [
+        "امير",
+        "أمير",
+        "amir"
+      ],
+      "summaryAr": "يرد اسم أمير في عنوان المقطع المنشور من «القرار المستحيل». لا تتوفر سيرة عامة معتمدة للشخصية في الملفات الحالية.",
+      "summaryEn": "Amir is named in the published Short from The Impossible Decision. The current files do not provide an approved public character biography.",
+      "visibility": "public",
+      "source": "assets/content-data.js#short-ZRvTJkOK6HQ",
+      "url": "https://www.youtube.com/shorts/ZRvTJkOK6HQ"
+    }
+  ],
+  "production": [
+    {
+      "id": "production-artwork",
+      "titleAr": "أغلفة مشاريع الاستوديو قيد الإنتاج",
+      "titleEn": "Studio projects in production — artwork",
+      "summaryAr": "تعرض الصفحة الرئيسية عشرة أغلفة لمشاريع قيد الإنتاج؛ أسماء هذه المشاريع ومواعيد إصدارها غير موثّقة نصياً.",
+      "summaryEn": "The homepage displays ten covers for projects in production. Their titles and release dates are not documented in text.",
+      "status": "in-production",
+      "visibility": "public",
+      "url": "../index.html#work",
+      "source": "index.html#work",
+      "artworkPaths": [
+        "images/projects/1000734344.png",
+        "images/projects/1000733992.png",
+        "images/projects/1000733937.png",
+        "images/projects/1000734296.png",
+        "images/projects/1000731946.png",
+        "images/projects/1000746607.png",
+        "images/projects/1000733649.jpg",
+        "images/projects/1000734011.png",
+        "images/projects/1000743757.png",
+        "images/projects/1000743756.png"
+      ]
+    }
+  ],
+  "contacts": [
+    {
+      "label": "Email",
+      "url": "mailto:mhyprodection@gmail.com"
+    },
+    {
+      "label": "WhatsApp",
+      "url": "https://wa.me/96176682043"
+    },
+    {
+      "label": "YouTube",
+      "url": "https://youtube.com/@mhyproduction-u9i"
+    }
+  ],
   "rules": {
     "neverInvent": true,
     "neverRevealPrivate": true,
-    "spoilersRequireOptIn": true
+    "spoilersBlocked": true,
+    "publicationScope": "status describes the listed asset only; a published cover or part does not establish a completed film",
+    "unknownTitlesRemainUnknown": true
   }
 }
