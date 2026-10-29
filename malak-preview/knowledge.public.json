@@ -13,70 +13,70 @@
       "id": "films",
       "titleAr": "الأفلام الطويلة",
       "titleEn": "Feature films",
-      "url": "films.html",
+      "url": "../films.html",
       "visibility": "public"
     },
     {
       "id": "short-films",
       "titleAr": "الأفلام القصيرة",
       "titleEn": "Short films",
-      "url": "short-films.html",
+      "url": "../short-films.html",
       "visibility": "public"
     },
     {
       "id": "music-videos",
       "titleAr": "الفيديو كليبات",
       "titleEn": "Music videos",
-      "url": "music-videos.html",
+      "url": "../music-videos.html",
       "visibility": "public"
     },
     {
       "id": "audio",
       "titleAr": "الأغاني الصوتية",
       "titleEn": "Audio songs",
-      "url": "audio.html",
+      "url": "../audio.html",
       "visibility": "public"
     },
     {
       "id": "series",
       "titleAr": "المسلسلات",
       "titleEn": "Series",
-      "url": "series.html",
+      "url": "../series.html",
       "visibility": "public"
     },
     {
       "id": "gallery",
       "titleAr": "معرض الصور",
       "titleEn": "Gallery",
-      "url": "gallery.html",
+      "url": "../gallery.html",
       "visibility": "public"
     },
     {
       "id": "trailers",
       "titleAr": "التريلرات والريلز",
       "titleEn": "Trailers and reels",
-      "url": "trailers.html",
+      "url": "../trailers.html",
       "visibility": "public"
     },
     {
       "id": "soundtracks",
       "titleAr": "أغاني الأفلام والمسلسلات",
       "titleEn": "Soundtracks",
-      "url": "soundtracks.html",
+      "url": "../soundtracks.html",
       "visibility": "public"
     },
     {
       "id": "studio-videos",
       "titleAr": "فيديوهات الاستوديو",
       "titleEn": "Studio videos",
-      "url": "studio-videos.html",
+      "url": "../studio-videos.html",
       "visibility": "public"
     },
     {
       "id": "studio-music",
       "titleAr": "أغاني الاستوديو",
       "titleEn": "Studio music",
-      "url": "studio-music.html",
+      "url": "../studio-music.html",
       "visibility": "public"
     }
   ],
