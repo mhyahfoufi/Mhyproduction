@@ -29,6 +29,8 @@ check(get('شو نهاية الفيلم؟').text.includes('محجوبة'));
 check(!answer(null,'music').links.length);
 check(!get('Who is Layla?').links.length);
 check(!get('upcoming projects').links.length);
+const production={id:'production-test',category:'films',titleAr:'فجر التجربة',titleEn:'Test Dawn',status:'in-production',visibility:'public',descriptionAr:'تفصيل سري لا يجب عرضه',youtubeUrl:'https://example.org/secret'};
+catalog.items.push(production);check(get('فجر التجربة').text.includes('قيد الإنتاج'));check(!get('Test Dawn').links.length);check(!get('فجر التجربة').text.includes('تفصيل سري'));check(get('upcoming projects').text.includes('production'));production.visibility='private';check(!get('فجر التجربة').text.includes('قيد الإنتاج'));catalog.items.pop();
 check(!('items' in identity));
 check(build(catalog,identity,base).items.every(x=>x.status==='published'));
 (async()=>{

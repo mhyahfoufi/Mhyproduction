@@ -4,3 +4,5 @@
 .malak-voice-controls button,.malak-listen{border:1px solid #a47c42;background:#241b10;color:#f2d09a;border-radius:9px;padding:5px 9px;cursor:pointer;font:inherit}
 .malak-voice-controls button:disabled{opacity:.45;cursor:not-allowed}
 .malak-listen{margin-inline-start:7px;font-size:12px}
+
+.malak-voice-controls{flex-wrap:wrap;flex-shrink:0;max-height:180px;overflow:auto}.malak-voice-controls>span{flex-basis:100%}.malak-voice-controls select{width:100%;min-width:0;background:#211b14;color:#f1d4a3;padding:6px;border:1px solid #8a6737;border-radius:8px}.malak-voice-controls label{display:flex;align-items:center;gap:6px;font-size:11px;flex:1;min-width:120px}.malak-voice-controls input{width:70px;min-width:40px;padding:0}.messages{flex:1;min-height:90px}.chat header,.chips,form,.disclaimer{flex-shrink:0}

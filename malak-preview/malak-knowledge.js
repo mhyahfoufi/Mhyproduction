@@ -12,11 +12,14 @@ function answer(kb,query){
  if(/^(who is malak|what is malak|malak|ملك|مين ملك|من هي ملك)$/.test(q))return result(kb.identity.name+' — '+(kb.identity['personality'+lang]||kb.identity.personalityAr));
  if(/تواصل|واتس|بريد|ايميل|contact|whatsapp|email/.test(q))return result(english?'Official studio contact links:':'روابط التواصل الرسمية مع الاستوديو:',kb.contacts||[]);
  if(/^(who (are you|is mhyproduction)|what is mhyproduction|about( the studio| mhyproduction)?|من انتم|مين انتو|عن الاستوديو|شو هي mhyproduction|ما هي mhyproduction|mhyproduction)$/.test(q)){const text=kb.studio?.['description'+lang];return text?result(text):unknown();}
+ const projects=kb.projects||[];
+ if(/قيد الانتاج|قيد التطوير|in production|in development|upcoming/.test(q))return projects.length?result(english?'Publicly announced projects in production (no plot details):':'مشاريع معلنة للعامة وقيد الإنتاج، دون تفاصيل أحداث:',projects):result(english?'No publicly announced in-production projects are documented in the catalog.':'ما في مشاريع قيد الإنتاج معلنة للعامة وموثّقة بالكتالوج حالياً.');
  const all=kb.items.filter(x=>x.status==='published'&&x.visibility!=='private');
  const stop=new Set('شو في وين اين هل عندكم بدي اريد اعرض لي عن من هو هي مين فيلم افلام اغنيه اغاني موسيقي كليب شاهد مشاهده رابط روابط the a an what which where is are do you have show me tell about film films movie movies song songs music video videos available watch link links please'.split(' '));
  for(const word of [...stop]){stop.add(normalize(word));stop.add('ال'+normalize(word));}
  const tokens=q.split(' ').filter(t=>(t.length>1||/^\d+$/.test(t))&&!stop.has(t));
  const matches=tokens.length?all.filter(x=>[x.titleAr,x.titleEn,...(x.aliases||[])].some(t=>{const n=normalize(t);return tokens.every(token=>n.includes(token));})):[];
+ if(!matches.length&&tokens.length){const pending=projects.filter(x=>[x.titleAr,x.titleEn].some(t=>tokens.every(token=>normalize(t).includes(token))));if(pending.length)return result((english?'In production — not available to watch yet: ':'قيد الإنتاج — غير متاح للمشاهدة بعد: ')+pending.map(x=>x['title'+lang]).join('، '));}
  if(matches.length){return result((english?'Verified published catalog entries:\n':'عناصر منشورة موثّقة في الكتالوج:\n')+matches.map(x=>(x['title'+lang]||x.titleAr||x.titleEn)+(x['summary'+lang]?' — '+x['summary'+lang]:'')).join('\n'),matches);}
  // Unmatched specific questions never fall through to an unrelated catalog listing.
  if(tokens.some(t=>!/^(صور|معرض|صوتيه|قصيره|مسلسلات|series|episodes|gallery|image|images|poster|posters|audio|short|trailers|reels|اقسام|sections|categories)$/.test(t.replace(/^ال/,''))))return unknown();
@@ -37,7 +40,9 @@ function build(catalog,identity,base,site={}){
  const url=value=>{if(typeof value!=='string'||!value.trim())return '';try{const u=new URL(value,base);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
  const categories=catalog.categories.map(x=>({id:x.id,titleAr:x.titleAr,titleEn:x.titleEn,url:url(x.page)}));
  const items=catalog.items.filter(x=>x.status==='published'&&x.visibility!=='private').map(x=>({id:x.id,category:x.category,status:x.status,visibility:'public',titleAr:x.titleAr||x.titleEn||'',titleEn:x.titleEn||x.titleAr||'',aliases:Array.isArray(x.aliases)?x.aliases:[],summaryAr:x.descriptionAr||'',summaryEn:x.descriptionEn||'',image:url(x.image||x.cover),url:url(x.youtubeUrl||x.url||x.image),source:'assets/content-data.js#'+x.id}));
- return {visibility:'public-only',identity,categories,items,contacts:site.contacts||[],studio:site.studio};
+ // Only explicitly public announcements expose a title/status. Draft plot text stays excluded.
+ const projects=catalog.items.filter(x=>x.visibility==='public'&&['in-production','in_production','production','in-development','coming-soon'].includes(x.status)).map(x=>({titleAr:x.titleAr||x.titleEn||'',titleEn:x.titleEn||x.titleAr||'',status:x.status}));
+ return {visibility:'public-only',identity,categories,items,projects,contacts:site.contacts||[],studio:site.studio};
 }
 // Load the source itself, never a copied catalog. Unique URL bypasses browser/CDN caches.
 function loadCatalog(doc,base){return new Promise((resolve,reject)=>{
