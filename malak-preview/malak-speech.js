@@ -9,14 +9,16 @@ function createSpeech({synth=scope.speechSynthesis,Utterance=scope.SpeechSynthes
  function stop(){generation++;current=null;if(supported){try{synth.cancel();}catch{}}notify(supported?'stopped':'unsupported');}
  function speak(text,{lang='ar',rate=.9,volume=1}={}){
   stop();if(!supported){notify('unsupported');return false;}
-  refresh();const voice=choose(lang);if(!voice){notify('missing',lang);return false;}
+  refresh();const voice=choose(lang);// Android may support language routing while getVoices() is empty.
+  if(!voice)notify('fallback',lang);
   const token=generation;const parts=String(text).match(/[^.!?؟\n]+[.!?؟\n]*/g)||[];
   // Short utterances avoid long-text cutoffs on some Android speech engines.
   const chunks=parts.flatMap(p=>p.match(/.{1,180}(?:\s|$)|.{1,180}/gu)||[]);let index=0;
   function next(){if(token!==generation)return;if(index>=chunks.length){current=null;notify('ended');return;}
-   const u=new Utterance(chunks[index++]);current=u;u.voice=voice;u.lang=voice.lang;u.rate=Math.max(.6,Math.min(1.3,Number(rate)||.9));u.volume=Math.max(0,Math.min(1,Number(volume)));u.pitch=1;
+   const u=new Utterance(chunks[index++]);current=u;if(voice)u.voice=voice;u.lang=voice?.lang||(lang==='en'?'en-US':'ar-SA');u.rate=Math.max(.6,Math.min(1.3,Number(rate)||.9));u.volume=Math.max(0,Math.min(1,Number(volume)));u.pitch=1;
    u.onend=next;u.onerror=e=>{if(token!==generation)return;generation++;current=null;notify('error',e.error||'speech-failed');};
-   try{synth.speak(u);notify('speaking',voice.name);}catch(e){generation++;current=null;notify('error',e.message);}
+   u.onstart=()=>{if(token===generation)notify('speaking',voice?.name||u.lang);};
+   try{notify('starting',voice?.name||u.lang);synth.resume?.();synth.speak(u);}catch(e){generation++;current=null;notify('error',e.message);}
   }
   next();return true;
  }
