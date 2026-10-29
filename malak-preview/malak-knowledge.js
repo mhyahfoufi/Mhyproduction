@@ -9,18 +9,15 @@ function answer(kb,query){
  if(!kb||kb.visibility!=='public-only')return result(english?'Knowledge is unavailable. Please try again later.':'قاعدة المعرفة غير متاحة حالياً. جرّب لاحقاً.');
  if(/spoiler|ending|who dies|who kills|killer|betray|secret|نهاي|يموت|موت|مات|قتل|قاتل|خيان|سر الفيلم|اسرار|احرق|حرق/.test(q))return result(english?'Plot spoilers and endings are blocked in this preview.':'تفاصيل الحرق والنهايات محجوبة بهالنسخة التجريبية.');
  if(/ignore.*(rule|instruction)|تجاهل.*(تعليم|قواعد)|api key|password|كلمه السر|مفتاح/.test(q))return unknown();
- if(/تواصل|واتس|بريد|ايميل|contact|whatsapp|email/.test(q))return result(english?'Official studio contact links:':'روابط التواصل الرسمية مع الاستوديو:',kb.contacts);
- if(/^(who is malak|what is malak|malak|ملك|مين ملك|من هي ملك)$/.test(q))return result(english?'Malak is the experimental virtual interface for MHY AI, using verified public studio information.':'ملك هي الواجهة الافتراضية التجريبية لـ MHY AI، وبتجاوب من معلومات الاستوديو العامة الموثّقة.');
- if(/^(who (are you|is mhyproduction)|what is mhyproduction|about( the studio| mhyproduction)?|من انتم|مين انتو|عن الاستوديو|شو هي mhyproduction|ما هي mhyproduction|mhyproduction)$/.test(q))return result(kb.studio['description'+lang],[{label:kb.studio.name,url:kb.studio.url}]);
- if(/قيد الانتاج|قيد التطوير|in production|upcoming/.test(q))return result(kb.production[0]['summary'+lang],kb.production);
- const characterIntent=/شخصي|شخصيات|character|مين امير|من هو امير|who is amir/.test(q);
- if(characterIntent){const hits=kb.characters.filter(x=>x.aliases.some(a=>q.includes(normalize(a))));if(hits.length)return result(hits.map(x=>x['summary'+lang]).join('\n'),hits);if(/^(الشخصيات|شخصيات|characters|who are the characters|مين الشخصيات)$/.test(q))return result(english?'Only Amir is explicitly named in the current catalog. No full character biographies are documented.':'أمير هو الاسم الوحيد المذكور صراحةً في الكتالوج الحالي؛ سير الشخصيات الكاملة غير موثّقة.',kb.characters);return unknown();}
- const all=[...kb.works,...kb.music];
+ if(/^(who is malak|what is malak|malak|ملك|مين ملك|من هي ملك)$/.test(q))return result(kb.identity.name+' — '+(kb.identity['personality'+lang]||kb.identity.personalityAr));
+ if(/تواصل|واتس|بريد|ايميل|contact|whatsapp|email/.test(q))return result(english?'Official studio contact links:':'روابط التواصل الرسمية مع الاستوديو:',kb.contacts||[]);
+ if(/^(who (are you|is mhyproduction)|what is mhyproduction|about( the studio| mhyproduction)?|من انتم|مين انتو|عن الاستوديو|شو هي mhyproduction|ما هي mhyproduction|mhyproduction)$/.test(q)){const text=kb.studio?.['description'+lang];return text?result(text):unknown();}
+ const all=kb.items.filter(x=>x.status==='published'&&x.visibility!=='private');
  const stop=new Set('شو في وين اين هل عندكم بدي اريد اعرض لي عن من هو هي مين فيلم افلام اغنيه اغاني موسيقي كليب شاهد مشاهده رابط روابط the a an what which where is are do you have show me tell about film films movie movies song songs music video videos available watch link links please'.split(' '));
  for(const word of [...stop]){stop.add(normalize(word));stop.add('ال'+normalize(word));}
  const tokens=q.split(' ').filter(t=>(t.length>1||/^\d+$/.test(t))&&!stop.has(t));
  const matches=tokens.length?all.filter(x=>[x.titleAr,x.titleEn,...(x.aliases||[])].some(t=>{const n=normalize(t);return tokens.every(token=>n.includes(token));})):[];
- if(matches.length){return result((english?'Verified published catalog entries:\n':'عناصر منشورة موثّقة في الكتالوج:\n')+matches.map(x=>x['title'+lang]+(x['summary'+lang]?' — '+x['summary'+lang]:'')).join('\n'),matches);}
+ if(matches.length){return result((english?'Verified published catalog entries:\n':'عناصر منشورة موثّقة في الكتالوج:\n')+matches.map(x=>(x['title'+lang]||x.titleAr||x.titleEn)+(x['summary'+lang]?' — '+x['summary'+lang]:'')).join('\n'),matches);}
  // Unmatched specific questions never fall through to an unrelated catalog listing.
  if(tokens.some(t=>!/^(صور|معرض|صوتيه|قصيره|مسلسلات|series|episodes|gallery|image|images|poster|posters|audio|short|trailers|reels|اقسام|sections|categories)$/.test(t.replace(/^ال/,''))))return unknown();
  let ids=[];
@@ -32,8 +29,23 @@ function answer(kb,query){
  else if(/song|music|اغان|اغني|موسيق|كليب/.test(q))ids=['audio','music-videos','soundtracks','studio-music'];
  else if(/film|movie|افلام|فيلم/.test(q))ids=['films','short-films'];
  else if(/section|categor|اقسام/.test(q))return result(english?'Studio collections:':'أقسام الاستوديو:',kb.categories);
- if(ids.length){const rows=[...all,...kb.gallery,...kb.series].filter(x=>ids.includes(x.category)&&x.status==='published');if(rows.length)return result(english?'Published entries in the current catalog (publication refers to each listed item):':'العناصر المنشورة في الكتالوج الحالي (حالة النشر تخص كل عنصر بحد ذاته):',rows);return result(english?'No published entries are documented in this collection yet. This does not establish whether unlisted projects exist.':'ما في عناصر منشورة موثّقة بهالقسم بعد. هيدا ما بيحسم وجود مشاريع غير مسجّلة.',kb.categories.filter(x=>ids.includes(x.id)));}
+ if(ids.length){const rows=all.filter(x=>ids.includes(x.category)&&x.status==='published');if(rows.length)return result(english?'Published entries in the current catalog (publication refers to each listed item):':'العناصر المنشورة في الكتالوج الحالي (حالة النشر تخص كل عنصر بحد ذاته):',rows);return result(english?'No published entries are documented in this collection yet. This does not establish whether unlisted projects exist.':'ما في عناصر منشورة موثّقة بهالقسم بعد. هيدا ما بيحسم وجود مشاريع غير مسجّلة.',kb.categories.filter(x=>ids.includes(x.id)));}
  return unknown();
 }
-const api={answer,normalize};if(typeof module!=='undefined'&&module.exports)module.exports=api;else scope.MalakKnowledge=api;
+function build(catalog,identity,base,site={}){
+ if(!catalog||!Array.isArray(catalog.items)||!Array.isArray(catalog.categories))throw Error('Invalid catalog');
+ const url=value=>{if(typeof value!=='string'||!value.trim())return '';try{const u=new URL(value,base);return ['https:','http:'].includes(u.protocol)?u.href:''}catch{return ''}};
+ const categories=catalog.categories.map(x=>({id:x.id,titleAr:x.titleAr,titleEn:x.titleEn,url:url(x.page)}));
+ const items=catalog.items.filter(x=>x.status==='published'&&x.visibility!=='private').map(x=>({id:x.id,category:x.category,status:x.status,visibility:'public',titleAr:x.titleAr||x.titleEn||'',titleEn:x.titleEn||x.titleAr||'',aliases:Array.isArray(x.aliases)?x.aliases:[],summaryAr:x.descriptionAr||'',summaryEn:x.descriptionEn||'',image:url(x.image||x.cover),url:url(x.youtubeUrl||x.url||x.image),source:'assets/content-data.js#'+x.id}));
+ return {visibility:'public-only',identity,categories,items,contacts:site.contacts||[],studio:site.studio};
+}
+// Load the source itself, never a copied catalog. Unique URL bypasses browser/CDN caches.
+function loadCatalog(doc,base){return new Promise((resolve,reject)=>{
+ const script=doc.createElement('script');const u=new URL('assets/content-data.js',base);u.searchParams.set('malak_refresh',Date.now()+'-'+Math.random());
+ scope.MHY_CONTENT=undefined;script.src=u.href;
+ const timer=setTimeout(()=>finish(Error('Catalog timeout')),12000);
+ function finish(error){clearTimeout(timer);script.remove();script.onload=script.onerror=null;if(error)reject(error);else resolve(scope.MHY_CONTENT);}
+ script.onload=()=>finish();script.onerror=()=>finish(Error('Catalog load failed'));doc.head.append(script);
+});}
+const api={answer,normalize,build,loadCatalog};if(typeof module!=='undefined'&&module.exports)module.exports=api;else scope.MalakKnowledge=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
