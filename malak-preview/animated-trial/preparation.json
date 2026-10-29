@@ -1,0 +1,26 @@
+{
+  "enabled": false,
+  "providerCandidate": "D-ID Agents Photo Avatar",
+  "originalPath": "../index.html",
+  "sourceImage": "../assets/malak-original.png",
+  "mode": "scripted-speak",
+  "requirements": [
+    "Confirm free web trial and no payment authorization",
+    "Confirm Arabic voice in account",
+    "Create photo agent with original Malak image",
+    "Obtain domain-scoped client embed configuration",
+    "Test Chrome Android audio and lip sync"
+  ],
+  "fallback": {
+    "defaultMode": "original",
+    "onQuotaExhausted": "disconnect animated session and show original",
+    "onProviderError": "disconnect animated session and show original",
+    "onSwitchToOriginal": "disconnect animated session"
+  },
+  "security": {
+    "secretApiKeyInBrowser": false,
+    "autoUpgrade": false,
+    "paidOverage": false
+  },
+  "status": "Prepared only; no account, avatar session, integration or runtime switch activated"
+}
