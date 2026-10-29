@@ -1,0 +1,34 @@
+{
+  "version": "preview-1",
+  "visibility": "public-only",
+  "spoilerDefault": "off",
+  "works": [
+    {
+      "id": "the-impossible-decision-part-1",
+      "titleAr": "القرار المستحيل — الجزء الأول",
+      "titleEn": "The Impossible Decision — Part One",
+      "type": "film",
+      "status": "published",
+      "summaryAr": "الجزء الأول من فيلم القرار المستحيل من إنتاج MHYPRODUCTION.",
+      "spoilerLevel": "public",
+      "url": "films.html"
+    }
+  ],
+  "music": [
+    {
+      "id": "rajeen-ya-darna",
+      "titleAr": "راجعين يا دارنا",
+      "type": "music-video",
+      "status": "published",
+      "spoilerLevel": "public",
+      "url": "music-videos.html"
+    }
+  ],
+  "characters": [],
+  "relationships": [],
+  "rules": {
+    "neverInvent": true,
+    "neverRevealPrivate": true,
+    "spoilersRequireOptIn": true
+  }
+}
