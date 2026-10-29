@@ -1,27 +1,181 @@
 {
-  "version": "preview-1",
+  "version": "preview-2",
   "visibility": "public-only",
   "spoilerDefault": "off",
+  "studio": {
+    "name": "MHYPRODUCTION",
+    "descriptionAr": "استوديو لإنتاج القصص والأفلام والمسلسلات والأغاني والمحتوى المرئي باستخدام الذكاء الاصطناعي.",
+    "descriptionEn": "A studio producing stories, films, series, songs, and visual content using artificial intelligence.",
+    "url": "https://mhyahfoufi.github.io/Mhyproduction/"
+  },
+  "categories": [
+    {
+      "id": "films",
+      "titleAr": "الأفلام الطويلة",
+      "titleEn": "Feature films",
+      "url": "films.html",
+      "visibility": "public"
+    },
+    {
+      "id": "short-films",
+      "titleAr": "الأفلام القصيرة",
+      "titleEn": "Short films",
+      "url": "short-films.html",
+      "visibility": "public"
+    },
+    {
+      "id": "music-videos",
+      "titleAr": "الفيديو كليبات",
+      "titleEn": "Music videos",
+      "url": "music-videos.html",
+      "visibility": "public"
+    },
+    {
+      "id": "audio",
+      "titleAr": "الأغاني الصوتية",
+      "titleEn": "Audio songs",
+      "url": "audio.html",
+      "visibility": "public"
+    },
+    {
+      "id": "series",
+      "titleAr": "المسلسلات",
+      "titleEn": "Series",
+      "url": "series.html",
+      "visibility": "public"
+    },
+    {
+      "id": "gallery",
+      "titleAr": "معرض الصور",
+      "titleEn": "Gallery",
+      "url": "gallery.html",
+      "visibility": "public"
+    },
+    {
+      "id": "trailers",
+      "titleAr": "التريلرات والريلز",
+      "titleEn": "Trailers and reels",
+      "url": "trailers.html",
+      "visibility": "public"
+    },
+    {
+      "id": "soundtracks",
+      "titleAr": "أغاني الأفلام والمسلسلات",
+      "titleEn": "Soundtracks",
+      "url": "soundtracks.html",
+      "visibility": "public"
+    },
+    {
+      "id": "studio-videos",
+      "titleAr": "فيديوهات الاستوديو",
+      "titleEn": "Studio videos",
+      "url": "studio-videos.html",
+      "visibility": "public"
+    },
+    {
+      "id": "studio-music",
+      "titleAr": "أغاني الاستوديو",
+      "titleEn": "Studio music",
+      "url": "studio-music.html",
+      "visibility": "public"
+    }
+  ],
   "works": [
     {
       "id": "the-impossible-decision-part-1",
       "titleAr": "القرار المستحيل — الجزء الأول",
       "titleEn": "The Impossible Decision — Part One",
-      "type": "film",
-      "status": "published",
-      "summaryAr": "الجزء الأول من فيلم القرار المستحيل من إنتاج MHYPRODUCTION.",
-      "spoilerLevel": "public",
-      "url": "films.html"
+      "summaryAr": "الجزء الأول من فيلم «القرار المستحيل» من إنتاج MHYPRODUCTION.",
+      "summaryEn": "Part one of The Impossible Decision, a MHYPRODUCTION film.",
+      "url": "https://www.youtube.com/watch?v=p5zN1PBx8FE",
+      "category": "films",
+      "visibility": "public",
+      "status": "published"
+    },
+    {
+      "id": "short-ZRvTJkOK6HQ",
+      "titleAr": "القرار المستحيل — تصفية حسابات أمير مع العصابات",
+      "titleEn": "The Impossible Decision — Amir Settles Scores with the Gangs",
+      "summaryAr": "مقطع Shorts منشور من فيلم القرار المستحيل.",
+      "summaryEn": "A published Short from The Impossible Decision.",
+      "url": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
+      "category": "trailers",
+      "visibility": "public",
+      "status": "published"
     }
   ],
   "music": [
     {
       "id": "rajeen-ya-darna",
       "titleAr": "راجعين يا دارنا",
-      "type": "music-video",
+      "titleEn": "Rajeen Ya Darna",
+      "url": "https://www.youtube.com/watch?v=WongEZhvc_g",
+      "visibility": "public",
       "status": "published",
-      "spoilerLevel": "public",
-      "url": "music-videos.html"
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-Et3-f6Jl6r8",
+      "titleAr": "موسيقى هادئة عزف جيتار",
+      "titleEn": "Calm guitar music",
+      "url": "https://www.youtube.com/watch?v=Et3-f6Jl6r8",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-qIcy9xdapf4",
+      "titleAr": "أغنية تركية ديو",
+      "titleEn": "Turkish duet",
+      "url": "https://www.youtube.com/watch?v=qIcy9xdapf4",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-ZEpJE68cGN4",
+      "titleAr": "أغنية تركية حزينة ديو",
+      "titleEn": "Sad Turkish duet",
+      "url": "https://www.youtube.com/watch?v=ZEpJE68cGN4",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-MdXOiPRQ3FY",
+      "titleAr": "ربما ما زلنا نحب 2 — ديو عربي تركي",
+      "titleEn": "Perhaps We Still Love 2",
+      "url": "https://www.youtube.com/watch?v=MdXOiPRQ3FY",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-6mCrFUR63dk",
+      "titleAr": "ربما ما زلنا نحب — ديو",
+      "titleEn": "Perhaps We Still Love",
+      "url": "https://www.youtube.com/watch?v=6mCrFUR63dk",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-mIEfJemmINE",
+      "titleAr": "موسيقى هادئة تريح الأعصاب",
+      "titleEn": "Relaxing music",
+      "url": "https://www.youtube.com/watch?v=mIEfJemmINE",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
+    },
+    {
+      "id": "youtube-CEGS1SpCVbo",
+      "titleAr": "موسيقى تأخذك إلى عالم الخيال",
+      "titleEn": "Fantasy music",
+      "url": "https://www.youtube.com/watch?v=CEGS1SpCVbo",
+      "visibility": "public",
+      "status": "published",
+      "category": "music-videos"
     }
   ],
   "characters": [],
