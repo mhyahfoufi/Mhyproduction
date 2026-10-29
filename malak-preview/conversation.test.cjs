@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm');
+const {answer,build}=require('./malak-knowledge.js');const scope={window:{}};vm.runInNewContext(fs.readFileSync('assets/content-data.js','utf8'),scope);
+const kb=()=>build(scope.window.MHY_CONTENT,{},'https://example.org/');
+const cases=[['مرحبا','أهلا'],['أهلا','أهلا'],['هلا ملك','أهلا'],['سلام','أهلا'],['السلام عليكم','وعليكم'],['كيفك؟','جاهزة'],['كيف حالك','جاهزة'],['صباح الخير','صباح النور'],['مساء الخير','مسا النور'],['مين إنتِ؟','افتراضية'],['من هي ملك','افتراضية'],['شو بتعملي؟','بساعدك'],['شكراً','أهلا'],['يسلمو','أهلا'],['باي','مع السلامة'],['Hello','Hello'],['Hi','Hello'],['How are you?','ready'],['Good morning','Good morning'],['Good evening','Good evening'],['Who are you?','virtual'],['What do you do?','discover'],['Thank you','welcome'],['Goodbye','Goodbye'],['مين مؤسس الاستوديو','محمد يحفوفي'],['Who is the founder?','Mohammad'],['شو خدماتكن','استوديو'],['شو عندكن أفلام؟','الكتالوج'],['في أغاني؟','الكتالوج'],['خبريني عن القرار المستحيل','الجزء الأول'],['بدي رابط راجعين يا دارنا','راجعين'],['شو نهاية الفيلم','محجوبة'],['ما هو كوكب زحل','معرفتي'],['احكيلي عنه','أي عمل']];
+for(const [q,part]of cases)assert.ok(answer(kb(),q,{}).text.includes(part),q+' => '+answer(kb(),q,{}).text);
+const state={};answer(kb(),'راجعين يا دارنا',state);assert.match(answer(kb(),'احكيلي عنه',state).text,/راجعين/);assert.equal(answer(kb(),'بدي رابطه',state).links.length,1);
+assert.notEqual(answer(null,'مرحبا',state).text,answer(null,'مرحبا',state).text);
+assert.match(answer(null,'مرحبا').text,/أهلا/);assert.equal(answer(null,'شو عندكن أفلام').links.length,0);
+for(let i=0;i<30;i++)answer(null,'hello',state);assert.equal(state.history.length,20);
+console.log(cases.length+' question cases and 6 context/offline/variation assertions passed.');
