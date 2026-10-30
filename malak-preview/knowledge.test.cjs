@@ -1,0 +1,42 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {answer,build,loadCatalog}=require('./malak-knowledge.js');
+const scope={window:{}};vm.runInNewContext(fs.readFileSync('assets/content-data.js','utf8'),scope);
+const catalog=JSON.parse(JSON.stringify(scope.window.MHY_CONTENT));
+const identity=JSON.parse(fs.readFileSync('malak-preview/knowledge.public.json','utf8'));
+const base='https://example.org/Mhyproduction/';let count=0;
+const check=(condition)=>{assert.ok(condition);count++};
+const get=q=>answer(build(catalog,identity,base),q);
+check(get('شو في أفلام؟').links.length===1);
+check(get('What music is available?').links.length===8);
+check(get('معرض الصور').links.length===10);
+check(get('صور الأفلام 1').links[0].url===base+'images/films/1000747822.png');
+for(const category of ['films','audio']){
+ const entry={id:'test-'+category,category,titleAr:'اختبار زهران',titleEn:'Zahran Test',descriptionAr:'الوصف الأول',descriptionEn:'First description',status:'published',youtubeUrl:'https://example.org/first',cover:'images/test.png'};
+ catalog.items.push(entry);
+ check(get('اختبار زهران').text.includes('الوصف الأول'));
+ check(get('Zahran Test').links[0].url==='https://example.org/first');
+ entry.titleAr='اختبار مرجان';entry.titleEn='Marjan Test';entry.descriptionAr='الوصف المعدل';entry.youtubeUrl='https://example.org/edited';
+ check(get('اختبار مرجان').text.includes('الوصف المعدل'));
+ check(get('Marjan Test').links[0].url==='https://example.org/edited');
+ check(!get('Zahran Test').links.length);
+ entry.status='draft';check(!get('Marjan Test').links.length);
+ entry.status='published';entry.visibility='private';check(!get('Marjan Test').links.length);
+ catalog.items.pop();check(!get('Marjan Test').links.length);
+}
+check(!get('Who kills Amir?').links.length);
+check(get('شو نهاية الفيلم؟').text.includes('محجوبة'));
+check(!answer(null,'music').links.length);
+check(!get('Who is Layla?').links.length);
+check(!get('upcoming projects').links.length);
+const production={id:'production-test',category:'films',titleAr:'فجر التجربة',titleEn:'Test Dawn',status:'in-production',visibility:'public',descriptionAr:'تفصيل سري لا يجب عرضه',youtubeUrl:'https://example.org/secret'};
+catalog.items.push(production);check(get('فجر التجربة').text.includes('قيد الإنتاج'));check(!get('Test Dawn').links.length);check(!get('فجر التجربة').text.includes('تفصيل سري'));check(get('upcoming projects').text.includes('production'));production.visibility='private';check(!get('فجر التجربة').text.includes('قيد الإنتاج'));catalog.items.pop();
+check(!('items' in identity));
+check(build(catalog,identity,base).items.every(x=>x.status==='published'));
+(async()=>{
+ const urls=[];let fail=false;
+ const doc={createElement(){return {remove(){}}},head:{append(s){urls.push(s.src);queueMicrotask(()=>{if(fail)s.onerror();else{global.MHY_CONTENT=catalog;s.onload();}})}}};
+ await loadCatalog(doc,base);await loadCatalog(doc,base);check(urls[0]!==urls[1]);
+ fail=true;await assert.rejects(loadCatalog(doc,base));check(global.MHY_CONTENT===undefined);
+ console.log(count+' assertions passed: live catalog, film/song add/edit/delete, unpublished/private, images, bilingual answers, cache busting, load failure and spoilers.');
+})().catch(e=>{console.error(e);process.exitCode=1});
