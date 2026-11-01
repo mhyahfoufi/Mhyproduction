@@ -1,0 +1,4 @@
+# Project-site copy. Google reads robots.txt from the host root, not this subdirectory.
+User-agent: *
+Allow: /Mhyproduction/
+Sitemap: https://mhyahfoufi.github.io/Mhyproduction/sitemap.xml
