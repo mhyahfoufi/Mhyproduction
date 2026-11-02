@@ -1,15 +1,13 @@
 {
   "enabled": false,
-  "providerCandidate": "D-ID Agents Photo Avatar",
+  "providerCandidate": null,
   "originalPath": "../index.html",
   "sourceImage": "../assets/malak-original.png",
   "mode": "scripted-speak",
   "requirements": [
-    "Confirm free web trial and no payment authorization",
-    "Confirm Arabic voice in account",
-    "Create photo agent with original Malak image",
-    "Obtain domain-scoped client embed configuration",
-    "Test Chrome Android audio and lip sync"
+    "Verify a card-free service includes the exact custom photo and API/SDK",
+    "Verify Arabic audio input and Chrome Android playback",
+    "Do not activate without an actual successful provider test"
   ],
   "fallback": {
     "defaultMode": "original",
@@ -22,7 +20,7 @@
     "autoUpgrade": false,
     "paidOverage": false
   },
-  "status": "Runtime mode switch and provider-neutral lifecycle implemented; no live provider configured or lip sync verified",
+  "status": "D-ID excluded by owner; no qualified live replacement tested. Original-speech recovery implemented; live Arabic lip-sync remains blocked.",
   "runtime": {
     "controller": "controller.js",
     "ui": "ui.js",
@@ -31,5 +29,8 @@
       "media-adapter.js"
     ],
     "providerEnabled": false
-  }
+  },
+  "excludedProviders": [
+    "D-ID"
+  ]
 }
