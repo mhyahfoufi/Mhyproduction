@@ -22,5 +22,14 @@
     "autoUpgrade": false,
     "paidOverage": false
   },
-  "status": "Prepared only; no account, avatar session, integration or runtime switch activated"
+  "status": "Runtime mode switch and provider-neutral lifecycle implemented; no live provider configured or lip sync verified",
+  "runtime": {
+    "controller": "controller.js",
+    "ui": "ui.js",
+    "adapters": [
+      "did-adapter.js",
+      "media-adapter.js"
+    ],
+    "providerEnabled": false
+  }
 }

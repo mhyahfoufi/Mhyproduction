@@ -6,3 +6,5 @@
 .malak-listen{margin-inline-start:7px;font-size:12px}
 
 .malak-voice-controls{flex-wrap:wrap;flex-shrink:0;max-height:180px;overflow:auto}.malak-voice-controls>span{flex-basis:100%}.malak-voice-controls select{width:100%;min-width:0;background:#211b14;color:#f1d4a3;padding:6px;border:1px solid #8a6737;border-radius:8px}.malak-voice-controls label{display:flex;align-items:center;gap:6px;font-size:11px;flex:1;min-width:120px}.malak-voice-controls input{width:70px;min-width:40px;padding:0}.messages{flex:1;min-height:90px}.chat header,.chips,form,.disclaimer{flex-shrink:0}
+
+.malak-avatar-controls{padding:8px 12px;border-top:1px solid #806a35}.malak-avatar-controls button{margin:3px;padding:8px;background:#191713;color:#f4d68a;border:1px solid #806a35;border-radius:8px}.malak-avatar-controls button[aria-pressed="true"]{background:#665022}.malak-avatar-controls p{font-size:12px;margin:6px 0}.malak-avatar-stage video{width:100%;max-height:230px;object-fit:contain}.malak-avatar-stage[hidden]{display:none}

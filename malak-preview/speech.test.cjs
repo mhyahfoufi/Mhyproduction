@@ -4,7 +4,7 @@ let voices=[],spoken=[],cancels=0,changed,states=[];
 class Utterance{constructor(text){this.text=text;}}
 const synth={getVoices:()=>voices,cancel(){cancels++},speak(u){spoken.push(u)},addEventListener(e,fn){changed=fn},removeEventListener(){}};
 const speech=createSpeech({synth,Utterance,onState:s=>states.push(s)});
-assert.equal(speech.speak('مرحبا'),false);assert.equal(states.at(-1).state,'missing');
+assert.equal(speech.speak('مرحبا'),true);assert.equal(spoken[0].lang,'ar-SA');assert.equal(states.at(-1).state,'starting');spoken[0].onstart();assert.equal(states.at(-1).state,'speaking');speech.stop();spoken=[];
 voices=[{name:'Arabic Male',lang:'ar',voiceURI:'male',localService:true},{name:'Salma',lang:'ar-SA',voiceURI:'female'},{name:'English',lang:'en-US',voiceURI:'english'}];changed();
 assert.equal(speech.choose('ar').name,'Salma');speech.select('male');assert.equal(speech.choose('ar').name,'Arabic Male');
 speech.speak('أهلاً. كيفك؟',{rate:1.1,volume:.4});assert.equal(spoken[0].voice.voiceURI,'male');assert.equal(spoken[0].volume,.4);assert.equal(spoken[0].rate,1.1);

@@ -7,7 +7,7 @@ async function run(supported){
  const voices=[{name:'Salma',lang:'ar-SA',voiceURI:'ar'},{name:'English',lang:'en-US',voiceURI:'en'}];
  const synth={getVoices:()=>voices,cancel(){cancels++},speak(u){calls.push(u)},addEventListener(e,f){voiceListener=f},removeEventListener(){}};
  Object.defineProperty(window.HTMLSelectElement.prototype,'value',{configurable:true,get(){return [...this.options].find(o=>o.hasAttribute('selected'))?.value||this.options[0]?.value||'';},set(v){for(const o of this.options){if(o.value===v)o.setAttribute('selected','');else o.removeAttribute('selected');}}});
- const context={window,document,location:{href:base+'malak-preview/'},URL,DOMParser,console,setTimeout,clearTimeout,SpeechSynthesisUtterance:class{constructor(text){this.text=text;}},speechSynthesis:supported?synth:undefined};
+ const context={window,document,location:{href:base+'malak-preview/'},URL,DOMParser,Event:window.Event,console,setTimeout,clearTimeout,SpeechSynthesisUtterance:class{constructor(text){this.text=text;}},speechSynthesis:supported?synth:undefined};
  window.speechSynthesis=context.speechSynthesis;window.SpeechSynthesisUtterance=supported?context.SpeechSynthesisUtterance:undefined;
  context.fetch=async url=>({ok:true,json:async()=>JSON.parse(fs.readFileSync('malak-preview/knowledge.public.json')),text:async()=>fs.readFileSync('index.html','utf8')});
  vm.createContext(context);
