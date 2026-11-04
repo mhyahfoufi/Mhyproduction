@@ -85,10 +85,10 @@ window.MHY_CONTENT = {
     {
       "id": "studio-music",
       "page": "studio-music.html",
-      "titleAr": "أغاني وإعلانات MHYPRODUCTION",
-      "titleEn": "MHYPRODUCTION promotional music",
-      "descriptionAr": "أغانٍ وإعلانات موسيقية بهوية الاستوديو",
-      "descriptionEn": "Songs and musical ads made for our studio",
+      "titleAr": "إعلانات الصفحة",
+      "titleEn": "Studio Advertisements",
+      "descriptionAr": "الإعلانات الرسمية والتعريفية لـ MHYPRODUCTION",
+      "descriptionEn": "Official studio advertisements and introductions",
       "number": "10"
     }
   ],
