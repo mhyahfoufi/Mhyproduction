@@ -2,12 +2,12 @@
 window.MHY_CONTENT = {
   "categories": [
     {
-      "id": "audio",
-      "page": "audio.html",
-      "titleAr": "الأغاني الصوتية",
-      "titleEn": "Audio songs",
-      "descriptionAr": "صوت يحكي حكاية",
-      "descriptionEn": "Stories told through sound",
+      "id": "studio-music",
+      "page": "studio-music.html",
+      "titleAr": "إعلانات الصفحة",
+      "titleEn": "Studio Advertisements",
+      "descriptionAr": "الإعلانات الرسمية والتعريفية لـ MHYPRODUCTION",
+      "descriptionEn": "Official studio advertisements and introductions",
       "number": "01"
     },
     {
@@ -83,12 +83,12 @@ window.MHY_CONTENT = {
       "number": "09"
     },
     {
-      "id": "studio-music",
-      "page": "studio-music.html",
-      "titleAr": "إعلانات الصفحة",
-      "titleEn": "Studio Advertisements",
-      "descriptionAr": "الإعلانات الرسمية والتعريفية لـ MHYPRODUCTION",
-      "descriptionEn": "Official studio advertisements and introductions",
+      "id": "audio",
+      "page": "audio.html",
+      "titleAr": "الأغاني الصوتية",
+      "titleEn": "Audio songs",
+      "descriptionAr": "صوت يحكي حكاية",
+      "descriptionEn": "Stories told through sound",
       "number": "10"
     }
   ],
