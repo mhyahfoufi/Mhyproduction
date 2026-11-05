@@ -1,40 +1,43 @@
-/* Neural Arabic speech only. No Android speechSynthesis fallback. No paid API. */
+/* Supertonic 3 neural Arabic voice, based on upstream browser ONNX implementation.
+   Free local inference. No Android speechSynthesis and no credentials. */
 (function(scope){'use strict';
 function createSpeech({onState=()=>{}}={}){
- let engine=null,loading=null,audio=null,objectUrl=null,token=0;
- const voices=[{voiceURI:'nabra-ar',name:'Nabra Neural Arabic (experimental)',lang:'ar'}];
+ let engine=null,style=null,loading=null,audio=null,url=null,token=0;
+ const voices=['F1','F2','F3','F4','F5'].map(v=>({voiceURI:v,name:'Supertonic female '+v,lang:'ar'}));let selected='F1';
+ const base='https://huggingface.co/supertone-oss-archive/supertonic-3/resolve/main';
  const notify=(state,detail='')=>onState({state,detail,voices,supported:true});
- function stop(){token++;if(audio){audio.pause();audio.onended=null;audio.onerror=null;audio=null;}if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}notify('stopped');}
+ function stop(){token++;if(audio){audio.pause();audio.onended=null;audio=null;}if(url){URL.revokeObjectURL(url);url=null;}notify('stopped');}
  async function load(){
   if(engine)return engine;
   if(!loading)loading=(async()=>{
-   notify('starting','تحميل نموذج الصوت العصبي العربي...');
-   const mod=await import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm');
-   if(!mod.NabraTTS?.load)throw Error('NabraTTS unavailable');
-   const loaded=await mod.NabraTTS.load({device:'auto',dtype:'fp16',worker:true,onProgress:p=>{if(p?.total)notify('starting','تحميل النموذج '+Math.round(p.loaded/p.total*100)+'%');}});
-   engine=loaded;return loaded;
+   notify('starting','تحميل نموذج Supertonic 3 (قد يستغرق وقتاً)');
+   const mod=await import('./supertonic-helper.js');
+   const dir=base+'/onnx';
+   const result=await mod.loadTextToSpeech(dir,{executionProviders:['wasm'],graphOptimizationLevel:'all'},(name,i,total)=>notify('starting','تحميل '+name+' '+i+'/'+total));
+   const loadedStyle=await mod.loadVoiceStyle([base+'/voice_styles/'+selected+'.json']);
+   engine={tts:result.textToSpeech,mod};style=loadedStyle;return engine;
   })().catch(e=>{loading=null;throw e});
   return loading;
  }
  async function speak(text,{lang='ar',rate=.9,volume=1}={}){
   stop();const my=token;
-  if(lang==='en'||!/[\u0600-\u06ff]/.test(String(text))){notify('missing','الصوت العصبي العربي فقط. لا يوجد صوت آلي بديل.');return false;}
+  if(lang==='en'||!/[\u0600-\u06ff]/.test(String(text))){notify('missing','حالياً الصوت العربي الطبيعي فقط');return false;}
   try{
-   const tts=await load();if(my!==token)return false;
-   notify('starting','جارٍ توليد الصوت العصبي...');
-   const result=await tts.generate(String(text).trim(),{speed:Math.max(.7,Math.min(1.3,Number(rate)||.9))});
+   const e=await load();if(my!==token)return false;
+   notify('starting','جارٍ توليد صوت ملك الطبيعي...');
+   const result=await e.tts.call(String(text).slice(0,260),'ar',style,6,Math.max(.7,Math.min(1.5,Number(rate)||.9)),.3);
    if(my!==token)return false;
-   if(!result?.audio?.length)throw Error('No generated audio');
-   objectUrl=URL.createObjectURL(tts.toWav(result.audio));
-   audio=new Audio(objectUrl);audio.volume=Math.max(0,Math.min(1,Number(volume)||0));
-   audio.onended=()=>{if(my===token){notify('ended');audio=null;if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}}};
-   audio.onerror=()=>{if(my===token)notify('error','فشل تشغيل الملف الصوتي')};
-   await audio.play();if(my===token)notify('speaking','Nabra neural Arabic');return true;
-  }catch(e){if(my===token)notify('error',String(e?.message||e));return false;}
+   const count=Math.floor(e.tts.sampleRate*result.duration[0]);
+   const wav=e.mod.writeWavFile(result.wav.slice(0,count),e.tts.sampleRate);
+   url=URL.createObjectURL(new Blob([wav],{type:'audio/wav'}));
+   audio=new Audio(url);audio.volume=Math.max(0,Math.min(1,Number(volume)||0));
+   audio.onended=()=>{if(my===token){notify('ended');audio=null;if(url){URL.revokeObjectURL(url);url=null;}}};
+   audio.onerror=()=>{if(my===token)notify('error','فشل تشغيل الصوت')};
+   await audio.play();if(my===token)notify('speaking','Supertonic '+selected);return true;
+  }catch(err){if(my===token)notify('error',String(err?.message||err));return false;}
  }
- function refresh(){notify('ready','صوت عصبي تجريبي — لا يوجد صوت Android آلي');return voices;}
- refresh();
- return {supported:true,refresh,speak,stop,select(){},choose(){return voices[0]},dispose(){stop()}};
- }
- scope.MalakSpeech={createSpeech};
+ function refresh(){notify('ready','صوت أنثوي عصبي فقط — بدون Android');return voices;}
+ refresh();return {supported:true,refresh,speak,stop,select(v){if(voices.some(x=>x.voiceURI===v)){selected=v;engine=null;style=null;loading=null;}},choose(){return voices.find(v=>v.voiceURI===selected)},dispose(){stop()}};
+}
+scope.MalakSpeech={createSpeech};
 })(typeof globalThis!=='undefined'?globalThis:this);
