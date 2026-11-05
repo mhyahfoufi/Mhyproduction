@@ -3,8 +3,8 @@
 (function(scope){'use strict';
 function createSpeech({onState=()=>{}}={}){
  let engine=null,style=null,loading=null,audio=null,url=null,token=0;
- const player=document.createElement('audio');player.controls=true;player.preload='auto';player.setAttribute('playsinline','');player.setAttribute('aria-label','مشغل صوت ملك');player.style.cssText='width:100%;min-height:48px;display:block';
- document.querySelector('.malak-voice-controls')?.append(player);
+ const player=document.createElement('audio');player.controls=true;player.preload='auto';player.setAttribute('playsinline','');player.setAttribute('aria-label','مشغل صوت ملك');player.style.cssText='width:100%;min-height:48px;height:48px;flex-shrink:0;display:block';
+ document.querySelector('.malak-voice-controls')?.after(player);
  let watchdog=null;
  function clearWatch(){clearInterval(watchdog);watchdog=null;}
  player.addEventListener('playing',()=>{clearWatch();notify('speaking','Supertonic '+selected)});
