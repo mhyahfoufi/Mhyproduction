@@ -1,24 +1,9 @@
-<!doctype html>
-<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ملك — اختبار الصوت العربي</title>
-<style>body{background:#101010;color:#f0ddb1;font-family:system-ui,sans-serif;max-width:650px;margin:0 auto;padding:24px;line-height:1.8}textarea,select{box-sizing:border-box;width:100%;padding:14px;border:1px solid #9b7c42;border-radius:10px;background:#252525;color:white;font:inherit}button{background:#d5b063;border:0;border-radius:10px;padding:13px 20px;margin:12px 5px;font:inherit;color:#111}button:disabled{opacity:.45}#status{background:#222;padding:12px;border-radius:10px;overflow-wrap:anywhere}small{color:#ddd}</style></head><body>
-<h1>ملك — تجربة الصوت العربي</h1>
-<p>تم استبدال المحرّك الخارجي الذي فشل تحميله بتجربة مباشرة لأصوات العربية الموجودة في هاتفك. لا اشتراك ولا بطاقة ولا تحميل مكتبة خارجية.</p>
-<label for="words">النص التجريبي</label>
-<textarea id="words" rows="4">مرحباً بكم في عالم إم إتش واي برودكشن. أنا ملك، مساعدتكم الرقمية، ويسعدني أن أكون معكم.</textarea>
-<label for="voices">اختيار الصوت العربي</label><select id="voices"><option>جارٍ فحص الأصوات...</option></select>
-<div><button id="play">▶ تجربة الصوت</button><button id="stop">■ إيقاف</button><button id="refresh">تحديث الأصوات</button></div>
-<p id="status" role="status" aria-live="polite">جاهز لفحص أصوات الهاتف.</p>
-<small>ملاحظة: جودة الصوت تختلف حسب الأصوات المثبتة في Android. هذه صفحة اختبار مستقلة ولا تغيّر صوت ملك في الموقع.</small>
-<script>
-(function(){
-const synth=window.speechSynthesis,voicesEl=document.getElementById('voices'),status=document.getElementById('status'),words=document.getElementById('words'),play=document.getElementById('play'),stop=document.getElementById('stop'),refresh=document.getElementById('refresh');let list=[],utterance=null;
-function message(s){status.textContent=s}
-function populate(){if(!synth){message('المتصفح لا يدعم النطق الآلي SpeechSynthesis. افتح الصفحة في Chrome.');voicesEl.innerHTML='<option>غير مدعوم</option>';play.disabled=true;return;}
-list=synth.getVoices().filter(v=>/^ar([_-]|$)/i.test(v.lang));voicesEl.innerHTML='';
-if(!list.length){const o=document.createElement('option');o.value='';o.textContent='الصوت العربي الافتراضي (قد لا يكون مثبتاً)';voicesEl.append(o);message('لم تظهر أصوات عربية مثبتة. سنجرّب الصوت العربي الافتراضي.');}
-else{list.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v.name+' — '+v.lang+(v.localService?' (على الجهاز)':' (عبر خدمة)');voicesEl.append(o)});let preferred=list.findIndex(v=>/female|woman|أنث|امرأة|ليلى|هدى|منى|زينة|sara|laila|salma/i.test(v.name));if(preferred>=0)voicesEl.value=String(preferred);message('تم العثور على '+list.length+' صوت عربي. اختر الصوت ثم اضغط تجربة الصوت.');}}
-play.onclick=()=>{if(!synth)return;const t=words.value.trim();if(!t){message('اكتب نصاً أولاً.');return;}synth.cancel();utterance=new SpeechSynthesisUtterance(t);utterance.lang='ar-SA';utterance.rate=.9;utterance.pitch=1.05;const selected=list[Number(voicesEl.value)];if(selected){utterance.voice=selected;utterance.lang=selected.lang;}utterance.onstart=()=>message('الصوت يعمل الآن: '+(selected?.name||'الصوت الافتراضي'));utterance.onend=()=>message('انتهى تشغيل الصوت.');utterance.onerror=e=>message('تعذّر تشغيل الصوت: '+e.error+'. تحقق من إعدادات تحويل النص إلى كلام في الهاتف.');try{synth.speak(utterance);message('تم إرسال النص إلى محرّك الصوت. انتظر بدء النطق...');}catch(e){message('خطأ: '+e.message);}};
-stop.onclick=()=>{synth?.cancel();message('تم إيقاف الصوت.')};refresh.onclick=populate;if(synth)synth.onvoiceschanged=populate;populate();setTimeout(populate,600);
-})();
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ملك | اختبار الصوت العصبي</title><style>body{background:#101010;color:#f0dbac;font:18px/1.8 system-ui;max-width:650px;margin:auto;padding:22px}textarea{width:100%;box-sizing:border-box;background:#242424;color:#fff;border:1px solid #b99750;border-radius:12px;padding:15px;font:inherit}button{background:#d4ae61;color:#17120b;border:0;border-radius:10px;padding:13px;margin:7px;font:inherit}button:disabled{opacity:.5}#status{background:#292929;border-radius:10px;padding:15px;white-space:pre-wrap;overflow-wrap:anywhere}small{color:#ddd}</style></head><body><h1>ملك — الصوت العربي العصبي</h1><p>تجربة نموذج صوت عربي بالذكاء الاصطناعي، وليس صوت Android الآلي. مجانية ولا تحتاج بطاقة أو حساب. التحميل الأول قد يكون كبيراً ويستغرق وقتاً.</p><textarea id="words" rows="4">مَرْحَبًا بِكُمْ فِي عَالَمِ إِمْ إِتْشْ وَايْ بْرُودَكْشَنْ. أَنَا مَلَك، مُسَاعِدَتُكُمُ الرَّقْمِيَّةُ، وَيَسْعَدُنِي أَنْ أَكُونَ مَعَكُمْ.</textarea><div><button id="play">توليد صوت ملك العصبي</button><button id="stop" disabled>إيقاف</button></div><p id="status" role="status">جاهز لبدء التجربة.</p><small>الصوت العربي الفصيح فقط. إذا فشل تحميل النموذج، لن يتم تشغيل الصوت الآلي بدلاً منه. هذه صفحة تجريبية مستقلة ولا تغيّر المساعد الرسمي.</small><script type="module">
+const play=document.querySelector('#play'),stop=document.querySelector('#stop'),status=document.querySelector('#status'),words=document.querySelector('#words');let engine,audio,url;
+function state(s){status.textContent=s}
+play.onclick=async()=>{play.disabled=true;state('تحميل محرّك الصوت العصبي...');try{
+if(!engine){const {NabraTTS}=await import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm');if(!NabraTTS)throw Error('مكتبة Nabra غير متاحة من شبكة التوزيع');engine=await NabraTTS.load({device:'wasm',dtype:'fp16',worker:false,onProgress:p=>{if(p.total)state('تحميل '+p.file+': '+Math.round(p.loaded/p.total*100)+'%')}});}
+const t=words.value.trim();if(!t)throw Error('اكتب نصاً أولاً');state('توليد الكلام بصوت عصبي...');const result=await engine.generate(t);if(!result.audio||!result.audio.length)throw Error('لم يتم توليد عينات صوتية');if(audio)audio.pause();if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(engine.toWav(result.audio));audio=new Audio(url);stop.disabled=false;audio.onended=()=>{play.disabled=false;stop.disabled=true;state('انتهى الصوت العصبي بنجاح')};await audio.play();state('الصوت العصبي يعمل الآن');
+}catch(e){play.disabled=false;stop.disabled=true;state('فشل الصوت العصبي: '+(e?.message||e)+'\nلا يوجد صوت آلي احتياطي. يرجى تصوير هذا الخطأ.');}};
+stop.onclick=()=>{audio?.pause();play.disabled=false;stop.disabled=true;state('تم إيقاف التشغيل')};
 </script></body></html>
