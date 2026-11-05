@@ -17,7 +17,7 @@ const speech=window.MalakSpeech.createSpeech({onState({state,detail,voices,suppo
   for(const v of voices){const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';voiceSelect.append(o);}voiceSelect.value=previous;voiceSelect.disabled=!supported;
  }
  const arabic=voices.some(v=>/^ar(?:[-_]|$)/i.test(v.lang));
- voiceLabel.textContent=state==='starting'?detail:state==='stopped'?'تم إيقاف الصوت':state==='ended'?'انتهى تشغيل الصوت':state==='unsupported'?'النطق غير مدعوم في هذا المتصفح / Speech unavailable':state==='missing'?'المحرّك الحالي يدعم الإجابات العربية فقط.':state==='error'?'تعذّر النطق / Speech error: '+detail:state==='speaking'?'جارٍ الاستماع / Speaking: '+detail:!arabic?'لا تظهر أصوات عربية على الجهاز؛ لن نثبتها تلقائياً. / No Arabic device voices.':'صوت أنثوي عربي • التحميل الأول نحو 400MB';
+ voiceLabel.textContent=state==='starting'?detail:state==='stopped'?'تم إيقاف الصوت':state==='ended'?'انتهى تشغيل الصوت':state==='unsupported'?'النطق غير مدعوم في هذا المتصفح / Speech unavailable':state==='missing'?'المحرّك الحالي يدعم الإجابات العربية فقط.':state==='error'?'تعذّر النطق / Speech error: '+detail:state==='speaking'?'جارٍ الاستماع / Speaking: '+detail:!arabic?'لا تظهر أصوات عربية على الجهاز؛ لن نثبتها تلقائياً. / No Arabic device voices.':'صوت أنثوي عربي • راجع حجم التحميل في عنوان النسخة';
 }});
 const speechAvailable=speech.supported;
 voiceSelect.addEventListener('change',()=>speech.select(voiceSelect.value));
