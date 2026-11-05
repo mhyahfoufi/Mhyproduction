@@ -576,7 +576,7 @@ const words=el('text').value.trim().split(/\s+/),chunks=[];let chunk='';
 for(const w of words){if(chunk.length+w.length>180){chunks.push(chunk);chunk=''}chunk+=(chunk?' ':'')+w}if(chunk)chunks.push(chunk);
 let wav=[];
 for(let i=0;i<chunks.length;i++){if(id!==seq)return;out.textContent='توليد المقطع '+(i+1)+'/'+chunks.length;
-const r=await model.textToSpeech.call(chunks[i],'ar',style,5,1,.2);if(id!==seq)return;wav.push(...r.wav.slice(0,Math.floor(r.duration[0]*model.textToSpeech.sampleRate)));}
+const r=await model.textToSpeech.call(chunks[i],'ar',style,5,1,.2);if(id!==seq)return;{const part=r.wav.slice(0,Math.floor(r.duration[0]*model.textToSpeech.sampleRate));for(const sample of part)wav.push(sample);}}
 if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(new Blob([writeWavFile(wav,model.textToSpeech.sampleRate)],{type:'audio/wav'}));a.src=url;
 out.textContent='تم توليد الملف. جارٍ التشغيل…';await a.play();if(id===seq)out.textContent='بدأ تشغيل ملف مولّد — جودة الصوت تحتاج الاستماع';
 }catch(e){if(id===seq)out.textContent='فشل: '+e.message;console.error(e)}finally{busy=false;el('start').disabled=false}};
