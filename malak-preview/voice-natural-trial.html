@@ -1,6 +1,38 @@
 <!doctype html>
-<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>تجربة صوت ملك الطبيعي — MHY</title><style>body{font-family:system-ui;background:#111;color:#f3e6c6;max-width:640px;margin:40px auto;padding:18px}button,textarea{font:inherit;padding:12px;border-radius:8px}textarea{width:100%;box-sizing:border-box;background:#222;color:white}button{background:#caa55c;color:#111;border:0;margin:8px 0}button:disabled{opacity:.5}small{display:block;color:#ddd}</style></head><body><h1>ملك — تجربة الصوت العربي المجاني</h1><p>تجربة مستقلة، لا تغيّر صوت ملك الرسمي. يعمل النموذج محلياً في المتصفح بعد تحميله لأول مرة (~30 MB). العربية الفصحى فقط، وجودة الصوت على Android قيد الاختبار.</p><textarea id="words" rows="4">مَرْحَبًا بِكُمْ فِي عَالَمِ إِمْ إِتْشْ وَايْ بْرُودَكْشَنْ. أَنَا مَلَك، مُسَاعِدَتُكُمُ الرَّقْمِيَّةُ.</textarea><div><button id="play">تجربة الصوت</button> <button id="stop" disabled>إيقاف</button></div><p id="status" role="status">جاهز للتجربة. اضغط لتوليد الصوت.</p><small>التحميل الأول يحتاج اتصال إنترنت. لا يتم إرسال النص إلى خدمة توليد صوت مدفوعة. الصوت هنا للتقييم قبل الدمج.</small><script type="module">
-const play=document.getElementById('play'),stop=document.getElementById('stop'),status=document.getElementById('status'),words=document.getElementById('words');let engine=null,audio=null;
-play.onclick=async()=>{play.disabled=true;status.textContent='جارٍ تحميل النموذج وتوليد الصوت…';try{if(!engine){const mod=await import('https://esm.sh/nabra-tts?bundle');engine=await mod.NabraTTS.load();}const result=await engine.generate(words.value.trim());if(!result.audio?.length)throw Error('لم ينتج صوت');if(audio){audio.pause();URL.revokeObjectURL(audio.src);}const blob=engine.toWav(result.audio);audio=new Audio(URL.createObjectURL(blob));stop.disabled=false;audio.onended=()=>{stop.disabled=true;play.disabled=false;status.textContent='انتهى التشغيل';};audio.onerror=()=>{play.disabled=false;stop.disabled=true;status.textContent='فشل تشغيل الملف الصوتي';};await audio.play();status.textContent='الصوت يعمل الآن';}catch(e){status.textContent='تعذّر تشغيل النموذج على هذا الجهاز/المتصفح: '+(e?.message||String(e));play.disabled=false;stop.disabled=true;}};
-stop.onclick=()=>{audio?.pause();stop.disabled=true;play.disabled=false;status.textContent='تم الإيقاف';};
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ملك | فحص الصوت العصبي</title>
+<style>body{font:17px/1.7 system-ui;background:#111;color:#f4dfae;max-width:660px;margin:auto;padding:20px}textarea,pre{box-sizing:border-box;width:100%;background:#242424;color:#fff;border:1px solid #a88b4c;border-radius:9px;padding:12px;font:inherit}button{background:#d4ae61;color:#111;border:0;border-radius:8px;padding:12px;margin:6px 4px;font:inherit}button:disabled{opacity:.5}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}small{color:#ddd}</style></head><body>
+<h1>ملك — اختبار الصوت العصبي العربي</h1>
+<p>تجربة تشخيصية مستقلة، لا تستخدم صوت Android الآلي ولا تعدّل مساعد ملك الرسمي. نجاح التحميل لا يعني نجاح توليد الصوت.</p>
+<label for="words">نص عربي متغيّر</label><textarea id="words" rows="4">مرحباً، أنا ملك، المساعدة الذكية لموقع إم إتش واي برودكشن. يسعدني أن أتحدث معكم اليوم.</textarea>
+<div><button id="play">تحميل وتوليد الصوت</button><button id="stop" disabled>إيقاف</button><button id="copy">نسخ تقرير الفحص</button></div>
+<p id="status" role="status" aria-live="polite">جاهز للفحص.</p><pre id="log"></pre>
+<small>إذا لم يبدأ الصوت، انسخ تقرير الفحص. لا يُعتمد هذا المحرّك قبل سماع صوت أنثوي واضح على هاتف Android.</small>
+<script type="module">
+const play=document.querySelector('#play'),stop=document.querySelector('#stop'),copy=document.querySelector('#copy'),status=document.querySelector('#status'),log=document.querySelector('#log'),words=document.querySelector('#words');
+let engine=null,audio=null,url=null;const started=performance.now();
+function report(step,detail=''){const line='['+((performance.now()-started)/1000).toFixed(1)+'s] '+step+(detail?' — '+detail:'');log.textContent+=line+'\n';status.textContent=step+(detail?' — '+detail:'');}
+report('البيئة',navigator.userAgent);report('التوافق','WebAssembly: '+(typeof WebAssembly!=='undefined')+', WebGPU: '+('gpu' in navigator)+', memory: '+(navigator.deviceMemory||'unknown')+' GB');
+play.onclick=async()=>{play.disabled=true;stop.disabled=true;try{
+const text=words.value.trim();if(!text)throw Error('النص فارغ');
+if(!engine){report('تحميل مكتبة Nabra من jsDelivr');
+const mod=await import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm');
+report('المكتبة وصلت','exports: '+Object.keys(mod).join(', '));
+if(!mod.NabraTTS||typeof mod.NabraTTS.load!=='function')throw Error('واجهة NabraTTS.load غير موجودة؛ تحقق من اسم الحزمة وإصدارها');
+report('تحميل النموذج');
+engine=await mod.NabraTTS.load({device:'wasm',dtype:'fp16',worker:false,onProgress:p=>{if(p?.total)report('تحميل ملف '+(p.file||''),Math.round(p.loaded/p.total*100)+'%')}});
+report('النموذج جاهز');}
+report('بدء توليد صوت من نص جديد');
+const result=await engine.generate(text);
+if(!result?.audio?.length)throw Error('لم يُنتج المحرّك عينات صوتية');
+report('تم توليد عينات صوتية',String(result.audio.length));
+if(audio)audio.pause();if(url)URL.revokeObjectURL(url);
+const wav=engine.toWav(result.audio);url=URL.createObjectURL(wav);audio=new Audio(url);
+audio.onended=()=>{report('انتهى التشغيل');play.disabled=false;stop.disabled=true};
+audio.onerror=()=>{report('فشل تشغيل ملف الصوت');play.disabled=false;stop.disabled=true};
+stop.disabled=false;await audio.play();report('بدأ تشغيل الصوت');
+}catch(e){report('فشل',String(e?.stack||e));play.disabled=false;stop.disabled=true;}};
+stop.onclick=()=>{audio?.pause();report('تم إيقاف الصوت');play.disabled=false;stop.disabled=true};
+copy.onclick=async()=>{try{await navigator.clipboard.writeText(log.textContent);report('تم نسخ التقرير')}catch(e){report('تعذر النسخ',String(e))}};
+window.addEventListener('unhandledrejection',e=>report('خطأ غير معالج',String(e.reason)));
 </script></body></html>
