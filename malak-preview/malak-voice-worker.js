@@ -1,4 +1,4 @@
-import {loadTextToSpeech,loadVoiceStyle,writeWavFile} from './voice-worker-runtime.js';
+import {loadTextToSpeech,loadVoiceStyle,writeWavFile} from './voice-worker-runtime.js?v=5';
 const base='https://huggingface.co/askurios8/supertonic-3-int8/resolve/95618f5d61cef4923c3b802a332fd603723718f7';
 let engine,styles={};
 self.addEventListener('malak-download',e=>postMessage({type:'progress',detail:e.detail.file+' — '+(e.detail.stage||e.detail.mb+' MB')}));
