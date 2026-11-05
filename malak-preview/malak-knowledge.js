@@ -15,7 +15,7 @@ function catalogAnswer(kb,query){
  const projects=kb.projects||[];
  if(/قيد الانتاج|قيد التطوير|in production|in development|upcoming/.test(q))return projects.length?result(english?'Publicly announced projects in production (no plot details):':'مشاريع معلنة للعامة وقيد الإنتاج، دون تفاصيل أحداث:',projects):result(english?'No publicly announced in-production projects are documented in the catalog.':'ما في مشاريع قيد الإنتاج معلنة للعامة وموثّقة بالكتالوج حالياً.');
  const all=kb.items.filter(x=>x.status==='published'&&x.visibility!=='private');
- const stop=new Set('شو في وين اين هل عندكم عندكن خبريني احكيلي قصه بتقدر ممكن عندنا بدي اريد اعرض لي عن من هو هي مين فيلم افلام اغنيه اغاني موسيقي كليب شاهد مشاهده رابط روابط the a an what which where is are do you have show me tell about film films movie movies song songs music video videos available watch link links please'.split(' '));
+ const stop=new Set('شو في وين اين هل عندك عندكم عندكن خبريني احكيلي قصه بتقدر ممكن عندنا بدي اريد اعرض لي عن من هو هي مين فيلم افلام اغنيه اغاني موسيقي كليب شاهد مشاهده رابط روابط the a an what which where is are do you have show me tell about film films movie movies song songs music video videos available watch link links please'.split(' '));
  for(const word of [...stop]){stop.add(normalize(word));stop.add('ال'+normalize(word));}
  const tokens=q.split(' ').filter(t=>(t.length>1||/^\d+$/.test(t))&&!stop.has(t));
  const matches=tokens.length?all.filter(x=>[x.titleAr,x.titleEn,...(x.aliases||[])].some(t=>{const n=normalize(t);return tokens.every(token=>n.includes(token));})):[];
@@ -62,7 +62,7 @@ function answer(kb,query,state={}){
    else out=reply('أي عمل بتقصد؟ ابعتلي اسمه وبساعدك.','Which work do you mean? Please send its title.');
   }
   if(!out){
-   lookup=normalize(lookup).replace(/^(خبريني عن|احكيلي عن|شو قصه|مين عمل|بدي رابط|وين فيني شوف|tell me about|who made)\s+/,'').replace(/عندكن|عندكون/g,'عندكم');
+   lookup=normalize(lookup).replace(/^(خبريني عن|احكيلي عن|شو قصه|مين عمل|بدي رابط|وين فيني شوف|tell me about|who made)\s+/,'').replace(/\bNEVER\b/g,'').replace(/عندكون|عندكن|عندك(?=\s|$)/g,'عندكم');
    if(/^(شو عندكم|شو عندكن|شو في جديد|في شي جديد|what is new|what s new)$/.test(lookup))lookup=english?'sections':'اقسام';
    out=catalogAnswer(kb,lookup);
    if(kb){const found=kb.items.filter(x=>x.url&&out.links.some(l=>l.url===x.url));if(found.length===1)state.lastWork=found[0].titleAr||found[0].titleEn;}
