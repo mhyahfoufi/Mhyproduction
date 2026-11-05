@@ -1,29 +1,40 @@
-/* Optional device speech. No credentials, paid services or automatic playback. */
-(function(scope){
-'use strict';
-function createSpeech({synth=scope.speechSynthesis,Utterance=scope.SpeechSynthesisUtterance,onState=()=>{}}={}){
- const supported=!!synth&&typeof Utterance==='function';let voices=[],preferred='',current=null,generation=0;
- const notify=(state,detail='')=>onState({state,detail,voices,supported});
- function refresh(){try{voices=supported?synth.getVoices():[];}catch{voices=[];}notify(supported?'ready':'unsupported');return voices;}
- function choose(lang){const prefix=lang==='en'?'en':'ar';const candidates=voices.filter(v=>v.lang.toLowerCase().replace('_','-').split('-')[0]===prefix);return candidates.find(v=>v.voiceURI===preferred)||candidates.find(v=>/(female|woman|hoda|salma|laila|layla|mariam|amira|sara|noura|nora)/i.test(v.name))||candidates.find(v=>v.localService)||candidates[0]||null;}
- function stop(){generation++;current=null;if(supported){try{synth.cancel();}catch{}}notify(supported?'stopped':'unsupported');}
- function speak(text,{lang='ar',rate=.9,volume=1}={}){
-  stop();if(!supported){notify('unsupported');return false;}
-  refresh();const voice=choose(lang);// Android may support language routing while getVoices() is empty.
-  if(!voice)notify('fallback',lang);
-  const token=generation;const parts=String(text).match(/[^.!?؟\n]+[.!?؟\n]*/g)||[];
-  // Short utterances avoid long-text cutoffs on some Android speech engines.
-  const chunks=parts.flatMap(p=>p.match(/.{1,180}(?:\s|$)|.{1,180}/gu)||[]);let index=0;
-  function next(){if(token!==generation)return;if(index>=chunks.length){current=null;notify('ended');return;}
-   const u=new Utterance(chunks[index++]);current=u;if(voice)u.voice=voice;u.lang=voice?.lang||(lang==='en'?'en-US':'ar-SA');u.rate=Math.max(.6,Math.min(1.3,Number(rate)||.9));u.volume=Math.max(0,Math.min(1,Number(volume)));u.pitch=1;
-   u.onend=next;u.onerror=e=>{if(token!==generation)return;generation++;current=null;notify('error',e.error||'speech-failed');};
-   u.onstart=()=>{if(token===generation)notify('speaking',voice?.name||u.lang);};
-   try{notify('starting',voice?.name||u.lang);synth.resume?.();synth.speak(u);}catch(e){generation++;current=null;notify('error',e.message);}
-  }
-  next();return true;
+/* Neural Arabic speech only. No Android speechSynthesis fallback. No paid API. */
+(function(scope){'use strict';
+function createSpeech({onState=()=>{}}={}){
+ let engine=null,loading=null,audio=null,objectUrl=null,token=0;
+ const voices=[{voiceURI:'nabra-ar',name:'Nabra Neural Arabic (experimental)',lang:'ar'}];
+ const notify=(state,detail='')=>onState({state,detail,voices,supported:true});
+ function stop(){token++;if(audio){audio.pause();audio.onended=null;audio.onerror=null;audio=null;}if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}notify('stopped');}
+ async function load(){
+  if(engine)return engine;
+  if(!loading)loading=(async()=>{
+   notify('starting','تحميل نموذج الصوت العصبي العربي...');
+   const mod=await import('https://cdn.jsdelivr.net/npm/nabra-tts@0/+esm');
+   if(!mod.NabraTTS?.load)throw Error('NabraTTS unavailable');
+   const loaded=await mod.NabraTTS.load({device:'auto',dtype:'fp16',worker:true,onProgress:p=>{if(p?.total)notify('starting','تحميل النموذج '+Math.round(p.loaded/p.total*100)+'%');}});
+   engine=loaded;return loaded;
+  })().catch(e=>{loading=null;throw e});
+  return loading;
  }
- const changed=()=>refresh();if(supported)synth.addEventListener?.('voiceschanged',changed);refresh();
- return {supported,refresh,speak,stop,select(uri){preferred=uri;},choose,dispose(){stop();if(supported)synth.removeEventListener?.('voiceschanged',changed);}};
-}
-if(typeof module!=='undefined'&&module.exports)module.exports={createSpeech};else scope.MalakSpeech={createSpeech};
+ async function speak(text,{lang='ar',rate=.9,volume=1}={}){
+  stop();const my=token;
+  if(lang==='en'||!/[\u0600-\u06ff]/.test(String(text))){notify('missing','الصوت العصبي العربي فقط. لا يوجد صوت آلي بديل.');return false;}
+  try{
+   const tts=await load();if(my!==token)return false;
+   notify('starting','جارٍ توليد الصوت العصبي...');
+   const result=await tts.generate(String(text).trim(),{speed:Math.max(.7,Math.min(1.3,Number(rate)||.9))});
+   if(my!==token)return false;
+   if(!result?.audio?.length)throw Error('No generated audio');
+   objectUrl=URL.createObjectURL(tts.toWav(result.audio));
+   audio=new Audio(objectUrl);audio.volume=Math.max(0,Math.min(1,Number(volume)||0));
+   audio.onended=()=>{if(my===token){notify('ended');audio=null;if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}}};
+   audio.onerror=()=>{if(my===token)notify('error','فشل تشغيل الملف الصوتي')};
+   await audio.play();if(my===token)notify('speaking','Nabra neural Arabic');return true;
+  }catch(e){if(my===token)notify('error',String(e?.message||e));return false;}
+ }
+ function refresh(){notify('ready','صوت عصبي تجريبي — لا يوجد صوت Android آلي');return voices;}
+ refresh();
+ return {supported:true,refresh,speak,stop,select(){},choose(){return voices[0]},dispose(){stop()}};
+ }
+ scope.MalakSpeech={createSpeech};
 })(typeof globalThis!=='undefined'?globalThis:this);
