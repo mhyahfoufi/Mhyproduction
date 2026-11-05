@@ -288,6 +288,17 @@ window.MHY_CONTENT = {
       "cover": "https://i.ytimg.com/vi/ZRvTJkOK6HQ/hqdefault.jpg",
       "youtubeUrl": "https://www.youtube.com/shorts/ZRvTJkOK6HQ",
       "status": "published"
+    },
+    {
+      "id": "short-j3cb-bSs1V0",
+      "category": "trailers",
+      "titleAr": "القرار المستحيل — بداية مؤامرات عماد ضد نادر",
+      "titleEn": "The Impossible Decision — Imad Begins Plotting Against Nader",
+      "descriptionAr": "مقطع من فيلم «القرار المستحيل» — إنتاج MHYPRODUCTION.",
+      "descriptionEn": "A clip from The Impossible Decision — MHYPRODUCTION.",
+      "cover": "https://i.ytimg.com/vi/j3cb-bSs1V0/hqdefault.jpg",
+      "youtubeUrl": "https://www.youtube.com/shorts/j3cb-bSs1V0",
+      "status": "published"
     }
   ],
   "series": []
