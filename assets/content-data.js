@@ -301,5 +301,41 @@ window.MHY_CONTENT = {
       "status": "published"
     }
   ],
-  "series": []
+  "series": [
+    {
+      "id": "the-signature-universe",
+      "titleAr": "عالم البصمة",
+      "titleEn": "The Signature Universe",
+      "descriptionAr": "حلقات «عالم البصمة» — إنتاج MHYPRODUCTION.",
+      "descriptionEn": "The Signature Universe episodes — MHYPRODUCTION.",
+      "cover": "https://i.ytimg.com/vi/-zfL2qjiPNA/hqdefault.jpg",
+      "status": "published",
+      "episodes": [
+        {
+          "id": "signature-episode-1",
+          "season": 1,
+          "episode": 1,
+          "titleAr": "عالم البصمة — الحلقة الأولى",
+          "titleEn": "The Signature Universe — Episode 1",
+          "descriptionAr": "الحلقة الأولى من «عالم البصمة» — إنتاج MHYPRODUCTION.",
+          "descriptionEn": "Episode 1 of The Signature Universe — MHYPRODUCTION.",
+          "cover": "https://i.ytimg.com/vi/-zfL2qjiPNA/hqdefault.jpg",
+          "youtubeUrl": "https://www.youtube.com/shorts/-zfL2qjiPNA",
+          "status": "published"
+        },
+        {
+          "id": "signature-episode-2",
+          "season": 1,
+          "episode": 2,
+          "titleAr": "عالم البصمة — الحلقة الثانية",
+          "titleEn": "The Signature Universe — Episode 2",
+          "descriptionAr": "الحلقة الثانية من «عالم البصمة» — إنتاج MHYPRODUCTION.",
+          "descriptionEn": "Episode 2 of The Signature Universe — MHYPRODUCTION.",
+          "cover": "https://i.ytimg.com/vi/U29Dp5Tehkg/hqdefault.jpg",
+          "youtubeUrl": "https://www.youtube.com/shorts/U29Dp5Tehkg",
+          "status": "published"
+        }
+      ]
+    }
+  ]
 };
