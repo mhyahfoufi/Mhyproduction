@@ -437,7 +437,7 @@ export async function loadOnnx(onnxPath, options) {
  const reader=response.body.getReader(),parts=[];let n=0;
  while(true){const {value,done}=await reader.read();if(done)break;parts.push(value);n+=value.length;globalThis.dispatchEvent(new CustomEvent('malak-download',{detail:{file:onnxPath.split('/').pop(),mb:(n/1048576).toFixed(1)}}));}
  const bytes=new Uint8Array(n);let offset=0;for(const p of parts){bytes.set(p,offset);offset+=p.length;}
- window.dispatchEvent(new CustomEvent('malak-download',{detail:{file:onnxPath.split('/').pop(),stage:'تهيئة النموذج'}}));
+ globalThis.dispatchEvent(new CustomEvent('malak-download',{detail:{file:onnxPath.split('/').pop(),stage:'تهيئة النموذج'}}));
  parts.length=0;
  return await ort.InferenceSession.create(bytes,options);
  }finally{clearTimeout(timer);}
