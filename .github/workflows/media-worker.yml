@@ -37,4 +37,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare/media-worker
-          command: deploy
+          wranglerVersion: '4.158.0'
+          command: deploy worker.mjs --config wrangler.json
