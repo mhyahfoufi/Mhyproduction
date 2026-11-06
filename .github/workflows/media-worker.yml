@@ -31,11 +31,26 @@ jobs:
         run: node cloudflare/media-worker/configure.mjs
         env:
           MEDIA_BUCKET_NAME: ${{ vars.MEDIA_BUCKET_NAME }}
+      - name: Validate account ID without exposing it
+        shell: bash
+        env:
+          RAW_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          const account = (process.env.RAW_ACCOUNT_ID || '').trim();
+          if (!/^[a-fA-F0-9]{32}$/.test(account)) {
+            console.error('CLOUDFLARE_ACCOUNT_ID must be a 32-character hexadecimal account ID.');
+            process.exit(1);
+          }
+          console.log('::add-mask::' + account);
+          appendFileSync(process.env.GITHUB_ENV, 'CF_VALIDATED_ACCOUNT_ID=' + account + '\n');
+          NODE
       - name: Deploy existing Worker only
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: ${{ env.CF_VALIDATED_ACCOUNT_ID }}
           workingDirectory: cloudflare/media-worker
           wranglerVersion: '4.158.0'
           command: deploy worker.mjs --config wrangler.json
