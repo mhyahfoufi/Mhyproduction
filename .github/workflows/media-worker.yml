@@ -1,0 +1,40 @@
+name: Media Worker checks and manual deployment
+on:
+  pull_request:
+    paths: ['cloudflare/media-worker/**', '.github/workflows/media-worker.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: media-worker-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test cloudflare/media-worker/test.mjs
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: test
+    environment: cloudflare-media
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Configure existing R2 binding
+        run: node cloudflare/media-worker/configure.mjs
+        env:
+          MEDIA_BUCKET_NAME: ${{ vars.MEDIA_BUCKET_NAME }}
+      - name: Deploy existing Worker only
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare/media-worker
+          command: deploy
