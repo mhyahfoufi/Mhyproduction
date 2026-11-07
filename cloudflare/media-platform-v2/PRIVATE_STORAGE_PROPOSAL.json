@@ -1,0 +1,42 @@
+{
+  "status": "proposal-only-owner-approval-required",
+  "existingPublicBucket": {
+    "name": "mhyproductiomhyproduction-median-media",
+    "action": "no changes, no deletes, do not disable public URL"
+  },
+  "proposedPrivateBucket": {
+    "preferredName": "mhyproduction-private-media",
+    "nameAvailability": "not checked",
+    "publicDevelopmentURL": "disabled",
+    "customDomains": [],
+    "purpose": "new private originals, drafts, administrative metadata and logs; existing files are not moved"
+  },
+  "proposedTrialWorker": {
+    "preferredName": "mhy-media-admin-trial",
+    "exists": "not created",
+    "binding": {
+      "name": "MEDIA_BUCKET",
+      "bucket": "mhyproduction-private-media"
+    },
+    "adminAccess": "owner-only Cloudflare Access with verified mandatory MFA",
+    "publicMedia": "Worker policy checked against publication state on each read; no direct public bucket bypass"
+  },
+  "unchanged": [
+    "official GitHub Pages",
+    "main",
+    "Malak AI",
+    "existing R2 objects",
+    "existing public URL",
+    "existing Production Worker"
+  ],
+  "activationPrerequisites": [
+    "explicit owner approval for new resource",
+    "secure authenticated Cloudflare account access",
+    "inspect available account resources and limits",
+    "private binding and Access/MFA live tests",
+    "real image and playable-video upload/readback verification"
+  ],
+  "costs": "Not estimated or authorized as a paid purchase; verify account limits before provisioning",
+  "createdResources": [],
+  "liveTestsPerformed": []
+}
