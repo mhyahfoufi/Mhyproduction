@@ -1,0 +1,25 @@
+{
+  "binding": "MEDIA_BUCKET",
+  "bucket": "mhyproductiomhyproduction-median-media",
+  "reportedEnvironment": "Production",
+  "evidence": "Owner verified in Cloudflare Dashboard; no deployment or setting change",
+  "sourceCheck": {
+    "legacyWorker": "env.MEDIA_BUCKET confirmed in repository source",
+    "trialWorker": "env.MEDIA_BUCKET confirmed in repository source"
+  },
+  "verifiedLive": {
+    "bucketPermissions": false,
+    "bucketPrivacy": false,
+    "adminMFA": false,
+    "imageUploadReadback": false,
+    "videoUploadReadback": false
+  },
+  "safety": {
+    "productionChanged": false,
+    "objectsUploaded": false,
+    "objectsDeleted": false,
+    "privateBucketConfirmed": false,
+    "mfaPolicyConfirmed": false
+  },
+  "nextReadOnlyCheck": "Existing bucket Settings: Public Development URL/r2.dev and Custom Domains; existing trial Worker/Access application if any. Do not change access settings automatically."
+}
