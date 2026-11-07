@@ -26,7 +26,7 @@ Remaining before release: live D1/Turnstile/Access verification; Android interac
 
 ## Tests
 node --test test.mjs engagement/test.mjs
-20 tests pass overall: 10 existing media/admin and 10 audience tests. Audience tests execute the real SQL migration and queries with Node's local SQLite via a D1-shaped adapter, plus deterministic Turnstile and administrator mocks. Checks cover reaction uniqueness/change/cancel, tampered/expired identity, activation interlocks, pending persistence and public filtering, administrator denial, approval/hide/reply/report deduplication, comment policy, blocks, spam limits, threshold counting, external separation and statistics. These are not live Cloudflare D1 or real robot-challenge tests. No live result is claimed.
+21 tests pass overall: 10 existing media/admin and 11 audience tests. Audience tests execute the real SQL migration and queries with Node's local SQLite via a D1-shaped adapter, plus deterministic Turnstile and administrator mocks. Checks cover reaction uniqueness/change/cancel, tampered/expired identity, activation interlocks, pending persistence and public filtering, administrator denial, approval/hide/reply/report deduplication, comment policy, blocks, spam limits, threshold counting, external separation and statistics. These are not live Cloudflare D1 or real robot-challenge tests. No live result is claimed.
 
 Primary references:
 https://developers.cloudflare.com/d1/worker-api/d1-database/
