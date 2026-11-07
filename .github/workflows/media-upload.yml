@@ -1,0 +1,39 @@
+name: Upload media to existing R2
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'media-upload-queue/*.json'
+      - 'cloudflare/media-worker/upload.mjs'
+      - 'cloudflare/media-worker/upload.test.mjs'
+      - '.github/workflows/media-upload.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: r2-media-upload
+  cancel-in-progress: false
+jobs:
+  upload:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: cloudflare-media
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test uploader without credentials
+        run: node --test cloudflare/media-worker/upload.test.mjs
+      - name: Upload and verify anonymous retrieval
+        run: node cloudflare/media-worker/upload.mjs
+        env:
+          MEDIA_UPLOAD_TOKEN: ${{ secrets.MEDIA_UPLOAD_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-media-links
+          path: media-upload-results.json
+          retention-days: 30
