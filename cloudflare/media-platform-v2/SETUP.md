@@ -30,3 +30,6 @@ Primary references:
 https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/
 https://developers.cloudflare.com/cloudflare-one/access-controls/policies/mfa-requirements/
 https://developers.cloudflare.com/r2/api/workers/workers-multipart-usage/
+
+## Audience interaction extension (disabled)
+See engagement/README.md. New routes are gated off until the original admin/R2 verification and explicit D1/Turnstile setup pass. No public widgets are loaded. Combined local suite: 20 passing tests.
