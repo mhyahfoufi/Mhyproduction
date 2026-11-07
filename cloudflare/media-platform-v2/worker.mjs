@@ -35,10 +35,10 @@ export function makeWorker(verify=authenticate){return {async fetch(req,env){try
   if(path==='/api/admin/session')return json({authenticated:true,email:user.email});
  }
  configured(env);
- if(path==='/api/catalog'&&req.method==='GET'){const rows=await records(env,'records');return json({items:rows.filter(r=>!r.deleted&&r.status==='published'&&(['work','folder','external'].includes(r.kind)||r.verified)).map(({objectKey,sha256,revision,...r})=>r)})}
+ if(path==='/api/catalog'&&req.method==='GET'){const rows=await records(env,'records'),map=new Map(rows.map(r=>[r.id,r]));const published=r=>r&&!r.deleted&&r.status==='published';return json({items:rows.filter(r=>published(r)&&(!r.workId||published(map.get(r.workId)))&&(!r.folderId||published(map.get(r.folderId)))&&(['work','folder','external'].includes(r.kind)||r.verified)).map(({objectKey,sha256,revision,...r})=>r)})}
  if(path.startsWith('/media/')&&['GET','HEAD'].includes(req.method)){
   const id=path.slice(7),r=(await get(env,'records',id)).value;if(r.deleted||!r.verified||r.kind!=='media')deny(404,'Not found');
-  if(r.status!=='published')await verify(req,env);
+  let visible=r.status==='published';for(const parent of [r.workId,r.folderId].filter(Boolean)){const p=(await get(env,'records',parent)).value;if(p.deleted||p.status!=='published')visible=false}if(!visible)await verify(req,env);
   const download=url.searchParams.get('download')==='1';if(download&&!r.allowDownload)deny(403,'Download disabled');
   const headers=new Headers({'Content-Type':TYPES[r.ext],'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Accept-Ranges':'bytes','Content-Disposition':download?'attachment; filename="'+r.id+'.'+r.ext+'"':'inline'});
   const head=await env.MEDIA_BUCKET.head(r.objectKey);if(!head)deny(404,'Not found');let range;
