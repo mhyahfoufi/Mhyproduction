@@ -8,8 +8,9 @@ const MAX=25*1024*1024;
 export function parseManifest(text){
  const m=JSON.parse(text);
  if(!/^mhy-media\/[a-z0-9][a-z0-9/_-]{0,180}\.(png|jpe?g|webp|mp4|webm)$/.test(m.key||'')||m.key.includes('//'))throw Error('Invalid object key');
- if(typeof m.base64!=='string'||m.base64.length>Math.ceil(MAX/3)*4||! /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(m.base64))throw Error('Invalid file encoding');
+ if(typeof m.base64!=='string'||m.base64.length>Math.ceil(MAX/3)*4||m.base64.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(m.base64))throw Error('Invalid file encoding');
  const data=Buffer.from(m.base64,'base64');
+ if(data.toString('base64')!==m.base64)throw Error('Invalid file encoding');
  if(!data.length||data.length>MAX)throw Error('Invalid file size');
  if(!/^[a-f0-9]{64}$/.test(m.sha256||'')||hash(data)!==m.sha256)throw Error('File checksum mismatch');
  return {key:m.key,data,type:types[m.key.split('.').pop()]};
