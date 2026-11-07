@@ -1,5 +1,5 @@
 {
-  "status": "proposal-only-owner-approval-required",
+  "status": "owner-approved-creation-pending-authenticated-cloudflare-access",
   "existingPublicBucket": {
     "name": "mhyproductiomhyproduction-median-media",
     "action": "no changes, no deletes, do not disable public URL"
@@ -38,5 +38,28 @@
   ],
   "costs": "Not estimated or authorized as a paid purchase; verify account limits before provisioning",
   "createdResources": [],
-  "liveTestsPerformed": []
+  "liveTestsPerformed": [],
+  "ownerApproval": {
+    "scope": "Create mhyproduction-private-media for drafts/unpublished content only",
+    "conditions": [
+      "Keep existing public bucket and all objects/URLs untouched",
+      "New r2.dev URL disabled",
+      "No public/custom domains on private bucket",
+      "Authenticated authorized private reads only",
+      "No existing objects moved/deleted/copied",
+      "No production Worker or official website changes",
+      "Trial-only uploads/security tests",
+      "Notify owner of costs or paid configuration before activation"
+    ]
+  },
+  "executionBlocker": "Cloudflare dashboard presents sign-in; no authenticated account session. No resource created, no credentials requested again after prior declined sign-in.",
+  "costReview": {
+    "storageClass": "Standard only",
+    "publishedStandardStorageRateUSDPerGBMonthAboveIncludedUsage": 0.015,
+    "classAPerMillionUSD": 4.5,
+    "classBPerMillionUSD": 0.36,
+    "remainingAccountAllowance": "unknown; not a new free allowance per bucket",
+    "source": "https://developers.cloudflare.com/r2/pricing/",
+    "paidActivationAuthorized": false
+  }
 }
