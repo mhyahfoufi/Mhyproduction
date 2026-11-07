@@ -2,14 +2,188 @@
   "binding": "MEDIA_BUCKET",
   "bucket": "mhyproductiomhyproduction-median-media",
   "reportedEnvironment": "Production",
-  "evidence": "Owner verified in Cloudflare Dashboard; no deployment or setting change",
+  "evidence": "Owner manually confirmed Dashboard settings; accepted without repeated inspection",
+  "ownerConfirmed": {
+    "publicAccess": "enabled",
+    "customDomains": [],
+    "publicDevelopmentURL": "exists; URL intentionally withheld",
+    "corsPolicy": "none configured"
+  },
   "sourceCheck": {
-    "legacyWorker": "env.MEDIA_BUCKET confirmed in repository source",
-    "trialWorker": "env.MEDIA_BUCKET confirmed in repository source"
+    "bindingMatches": true,
+    "referenceAudit": {
+      "sha": "a2cfa424cc95b4f41d40d813ce5d83a53ffb7cc5",
+      "files": [
+        {
+          "path": "assets/content-data.js",
+          "refs": 0
+        },
+        {
+          "path": "assets/content.css",
+          "refs": 0
+        },
+        {
+          "path": "assets/content.js",
+          "refs": 0
+        },
+        {
+          "path": "assets/mhy-assistant.css",
+          "refs": 0
+        },
+        {
+          "path": "assets/mhy-assistant.js",
+          "refs": 0
+        },
+        {
+          "path": "audio.html",
+          "refs": 0
+        },
+        {
+          "path": "films.html",
+          "refs": 0
+        },
+        {
+          "path": "gallery.html",
+          "refs": 0
+        },
+        {
+          "path": "index.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/animated-trial/preparation.json",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/embed.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/index.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/knowledge.public.json",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-knowledge.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-lite-speech.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-preview.css",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-preview.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-speech.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-voice-worker.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/malak-worker-speech.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/mobile-lite-test.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/mobile-voice-v2.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/supertonic-lite-runtime.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/supertonic-runtime.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-engine-v5.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-natural-trial.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-player-v5.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-runtime-v5.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-v5.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/voice-worker-runtime.js",
+          "refs": 0
+        },
+        {
+          "path": "malak-preview/worker-voice-v4.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-supertonic-test.html",
+          "refs": 0
+        },
+        {
+          "path": "malak-voice-test-20261105.html",
+          "refs": 0
+        },
+        {
+          "path": "media-library/index.html",
+          "refs": 0
+        },
+        {
+          "path": "music-videos.html",
+          "refs": 0
+        },
+        {
+          "path": "series.html",
+          "refs": 0
+        },
+        {
+          "path": "short-films.html",
+          "refs": 0
+        },
+        {
+          "path": "soundtracks.html",
+          "refs": 0
+        },
+        {
+          "path": "studio-music.html",
+          "refs": 0
+        },
+        {
+          "path": "studio-videos.html",
+          "refs": 0
+        },
+        {
+          "path": "trailers.html",
+          "refs": 0
+        }
+      ]
+    }
   },
   "verifiedLive": {
-    "bucketPermissions": false,
-    "bucketPrivacy": false,
+    "authenticatedBucketOperations": false,
+    "privateStorage": false,
     "adminMFA": false,
     "imageUploadReadback": false,
     "videoUploadReadback": false
@@ -21,5 +195,5 @@
     "privateBucketConfirmed": false,
     "mfaPolicyConfirmed": false
   },
-  "nextReadOnlyCheck": "Existing bucket Settings: Public Development URL/r2.dev and Custom Domains; existing trial Worker/Access application if any. Do not change access settings automatically."
+  "nextStep": "Owner approval for proposed separate private storage, followed by authenticated Cloudflare provisioning and trial Access/MFA configuration. Do not re-request confirmed Dashboard facts."
 }
