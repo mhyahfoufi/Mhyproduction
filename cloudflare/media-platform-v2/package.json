@@ -1,1 +1,11 @@
-{"name":"mhy-media-platform-v2","private":true,"type":"module","scripts":{"test":"node --test test.mjs"},"dependencies":{"jose":"6.2.15"}}
+{
+  "name": "mhy-media-platform-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.mjs engagement/test.mjs"
+  },
+  "dependencies": {
+    "jose": "6.2.15"
+  }
+}
