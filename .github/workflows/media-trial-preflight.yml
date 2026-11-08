@@ -1,4 +1,4 @@
-name: Trial Cloudflare Access security audit
+name: Trial App Launcher setup and security audit
 on:
   push:
     branches: [mhy-library-admin-20261107]
@@ -77,3 +77,10 @@ jobs:
           console.log('READ_ONLY_AUDIT_COMPLETE; NO_CLOUDFLARE_MUTATIONS; NO_NEW_LOGIN_REQUESTED');
           
           NODE
+      - name: Test enrollment portal safeguards
+        run: node --test cloudflare/media-platform-v2/enable-owner-launcher.test.mjs
+      - name: Enable owner-only enrollment portal while preserving trial MFA
+        run: node cloudflare/media-platform-v2/enable-owner-launcher.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
