@@ -34,7 +34,7 @@ try{
  const policies=await api(`access/apps/${matching[0].id}/policies`);
  if(!Array.isArray(policies)||policies.some(p=>['bypass','non_identity'].includes(p.decision)))fail('Access bypass or service authentication is not allowed');
  const allow=policies.filter(p=>p.decision==='allow');
- if(!allow.length||!allow.every(p=>p.require?.some(r=>r.auth_method?.auth_method==='mfa')&&p.include?.length&&p.include.every(r=>r.email?.email?.toLowerCase()===vars.ADMIN_EMAIL.toLowerCase())))fail('Every allow policy must require MFA and restrict access to the configured owner email');
+ if(!allow.length||!allow.every(p=>p.mfa_config?.mfa_disabled===false&&p.mfa_config.allowed_authenticators?.length===1&&p.mfa_config.allowed_authenticators[0]==='totp'&&p.include?.length&&p.include.every(r=>r.email?.email?.toLowerCase()===vars.ADMIN_EMAIL.toLowerCase())))fail('Every allow policy must require MFA and restrict access to the configured owner email');
  const publicAccess=await api('r2/buckets/mhyproduction-private-media/domains/managed');
  const custom=await api('r2/buckets/mhyproduction-private-media/domains/custom');
  if(publicAccess.enabled!==false||!Array.isArray(custom.domains)||custom.domains.some(d=>d.enabled!==false))fail('R2 public exposure could not be ruled out');

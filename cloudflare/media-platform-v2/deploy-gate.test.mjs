@@ -12,11 +12,14 @@ async function run(change={}){
  const vars={ACCESS_ISSUER:'https://example.cloudflareaccess.com',ACCESS_AUD:'trial-aud',ADMIN_SUB:'owner-sub',ADMIN_EMAIL:'owner@example.com',MFA_POLICY_CONFIRMED:'true',PRIVATE_BUCKET_CONFIRMED:'true'};
  const settings={bindings:[{type:'r2_bucket',name:'MEDIA_BUCKET',bucket_name:'mhyproduction-private-media'},...Object.entries(vars).map(([name,text])=>({type:'plain_text',name,text}))]};
  const app={id:'app',aud:'trial-aud',domain:'mhy-media-admin-trial.example.workers.dev'};
- const policy={decision:'allow',include:[{email:{email:'owner@example.com'}}],require:[{auth_method:{auth_method:'mfa'}}]};
+ const policy={decision:'allow',include:[{email:{email:'owner@example.com'}}],require:[],mfa_config:{mfa_disabled:false,allowed_authenticators:['totp']}};
  const responses={settings,apps:[app],policies:[policy],managed:{enabled:false},custom:{domains:[]}};
  if(change.noApp)responses.apps=[];
  if(change.bypass)responses.policies.push({decision:'bypass'});
- if(change.noMfa)policy.require=[];
+ if(change.noMfa)delete policy.mfa_config;
+ if(change.disabledMfa)policy.mfa_config.mfa_disabled=true;
+ if(change.emptyMethods)policy.mfa_config.allowed_authenticators=[];
+ if(change.idpOnly){delete policy.mfa_config;policy.require=[{auth_method:{auth_method:'mfa'}}]}
  if(change.public)responses.managed.enabled=true;
  if(change.wrongHost)app.domain='production.example.com';
  if(change.everyone)policy.include=[{everyone:{}}];
@@ -28,7 +31,7 @@ async function run(change={}){
  }finally{await rm(root,{recursive:true,force:true})}
 }
 test('deployment gate rejects absent Access, bypass, missing MFA, public R2, broad allow, wrong host/branch and unverified login',async()=>{
- for(const option of ['accessDisabled','noApp','bypass','noMfa','public','everyone','wrongHost','wrongBranch','unverified']){
+ for(const option of ['accessDisabled','noApp','bypass','noMfa','disabledMfa','emptyMethods','idpOnly','public','everyone','wrongHost','wrongBranch','unverified']){
  const r=await run({[option]:true});assert.equal(r.status,1,option);assert.deepEqual(r.config.vars,{},option);
  }
 });
