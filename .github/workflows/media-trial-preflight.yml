@@ -19,13 +19,35 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Repair isolated trial Access and bindings without deploying code
-        run: node cloudflare/media-platform-v2/repair-trial.mjs
+      - name: Inspect denied trial login and policy conditions without changing Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Check existing credentials and trial security without changing Cloudflare
-        run: node cloudflare/media-platform-v2/preflight.mjs
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          const account=process.env.CLOUDFLARE_ACCOUNT_ID?.trim(),token=process.env.CLOUDFLARE_API_TOKEN?.trim();
+          if(process.env.GITHUB_REF!=='refs/heads/mhy-library-admin-20261107'||!/^[a-f0-9]{32}$/i.test(account||'')||!token)throw Error('Missing authorized trial context');
+          async function api(path){const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/'+path,{headers:{Authorization:'Bearer '+token}});const d=await r.json().catch(()=>null);if(!r.ok||d?.success!==true){console.log('READ_FAILED '+path.split('?')[0].replace(/[a-f0-9]{24,}/gi,'[id]')+' HTTP='+r.status+' CODES='+(d?.errors||[]).map(x=>Number(x.code)).join(','));return null;}return d.result;}
+          const host='mhy-media-admin-trial.mhyprodection.workers.dev';
+          const apps=await api('access/apps?per_page=100');
+          if(!Array.isArray(apps)||apps.length>=100)throw Error('Incomplete app inventory');
+          const matches=apps.filter(a=>a.domain===host||(a.destinations||[]).some(d=>d.type==='public'&&[host,'https://'+host].includes(d.uri)));
+          console.log('EXACT_HOST_APPS='+matches.length);
+          if(matches.length!==1)throw Error('Ambiguous trial application');
+          const app=await api('access/apps/'+matches[0].id);
+          const settings=await api('workers/scripts/mhy-media-admin-trial/settings');
+          const owner=settings?.bindings?.find(b=>b.name==='ADMIN_EMAIL'&&b.type==='plain_text')?.text?.toLowerCase().trim();
+          console.log('TRUSTED_ADMIN_EMAIL_AVAILABLE='+Boolean(owner));
+          const ps=await api('access/apps/'+app.id+'/policies');
+          if(Array.isArray(ps))for(const p of [...ps].sort((a,b)=>a.precedence-b.precedence)){
+           console.log('POLICY='+JSON.stringify({target:p.name==='MHY Admin Only',decision:p.decision,precedence:p.precedence,include:(p.include||[]).map(r=>({selectors:Object.keys(r),ownerEmail:owner&&r.email? r.email.email?.toLowerCase().trim()===owner:undefined,authMethod:r.auth_method?.auth_method})),require:(p.require||[]).map(r=>({selectors:Object.keys(r),authMethod:r.auth_method?.auth_method,ownerEmail:owner&&r.email?r.email.email?.toLowerCase().trim()===owner:undefined})),exclude:(p.exclude||[]).map(r=>({selectors:Object.keys(r),ownerEmail:owner&&r.email?r.email.email?.toLowerCase().trim()===owner:undefined})),approvalRequired:p.approval_required,purposeRequired:p.purpose_justification_required}));
+          }
+          const idps=await api('access/identity_providers');
+          if(Array.isArray(idps))console.log('IDPS='+JSON.stringify(idps.map(p=>({type:p.type,enabledForApp:!(app.allowed_idps?.length)||app.allowed_idps.includes(p.id)}))));
+          console.log('APP_AUTH='+JSON.stringify({type:app.type,allowedIdpCount:app.allowed_idps?.length,autoRedirect:app.auto_redirect_to_identity,appLauncherVisible:app.app_launcher_visible}));
+          const since=new Date(Date.now()-48*3600000).toISOString(),until=new Date().toISOString();
+          const logs=await api('access/logs/access_requests?limit=100&direction=desc&since='+encodeURIComponent(since)+'&until='+encodeURIComponent(until));
+          if(Array.isArray(logs)){const relevant=logs.filter(l=>l.app_uid===app.id||l.app_domain===host).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));console.log('RECENT_TRIAL_LOG_COUNT='+relevant.length);for(const l of relevant.slice(0,8))console.log('ACCESS_EVENT='+JSON.stringify({time:l.created_at,allowed:l.allowed,action:l.action,ownerMatch:owner?l.user_email?.toLowerCase().trim()===owner:undefined,connectionType:Array.isArray(idps)?idps.find(p=>p.id===l.connection)?.type:undefined,fields:Object.keys(l).filter(k=>!/email|ip|uid|ray|connection/i.test(k))}));}
+          console.log('READ_ONLY_AUDIT_COMPLETE; NO_CLOUDFLARE_MUTATIONS; NO_NEW_LOGIN_REQUESTED');
+          
+          NODE
