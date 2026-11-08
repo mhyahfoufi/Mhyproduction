@@ -1,0 +1,42 @@
+name: MHY media library v2 trial validation
+on:
+  push:
+    branches: [mhy-library-admin-20261107]
+    paths:
+      - 'cloudflare/media-platform-v2/**'
+      - 'media-admin/**'
+      - '.github/workflows/media-library-v2-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: cloudflare/media-platform-v2/package-lock.json
+      - name: Install locked dependencies
+        working-directory: cloudflare/media-platform-v2
+        run: npm ci
+      - name: Run platform and security tests
+        working-directory: cloudflare/media-platform-v2
+        run: npm test
+      - name: Build isolated trial bundle without deployment
+        working-directory: cloudflare/media-platform-v2
+        run: npm run build
+      - name: Confirm trial target and closed security gates
+        working-directory: cloudflare/media-platform-v2
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,statSync} from 'node:fs';
+          const p=JSON.parse(readFileSync('release/wrangler.json','utf8'));
+          if(p.name!=='mhy-media-admin-trial') throw Error('Unexpected deployment target');
+          if(p.vars?.MFA_POLICY_CONFIRMED!=='false'||p.vars?.PRIVATE_BUCKET_CONFIRMED!=='false') throw Error('Security gates must stay closed');
+          if(p.r2_buckets?.[0]?.bucket_name!=='mhyproduction-private-media') throw Error('Wrong R2 bucket');
+          if(statSync('release/worker.mjs').size<1000) throw Error('Bundle missing');
+          console.log('Trial bundle validated; deployment intentionally disabled.');
+          NODE
