@@ -46,4 +46,30 @@ if(Array.isArray(apps)){
  }
  }
 }
+// Independent checks continue even when Access has no application.
+const bucket=await check('PRIVATE_BUCKET_EXISTS','accounts/'+account+'/r2/buckets/mhyproduction-private-media');
+console.log('EXPECTED_BUCKET_IN_CONFIGURED_ACCOUNT='+Boolean(bucket?.name==='mhyproduction-private-media'));
+const managed=await check('PRIVATE_BUCKET_MANAGED_DOMAIN','accounts/'+account+'/r2/buckets/mhyproduction-private-media/domains/managed');
+const custom=await check('PRIVATE_BUCKET_CUSTOM_DOMAINS','accounts/'+account+'/r2/buckets/mhyproduction-private-media/domains/custom');
+console.log('R2_MANAGED_PUBLIC_ACCESS_DISABLED='+(managed?.enabled===false));
+console.log('R2_CUSTOM_PUBLIC_ACCESS_DISABLED='+(Array.isArray(custom?.domains)&&custom.domains.every(d=>d.enabled===false)));
+const organization=await check('ACCESS_ORGANIZATION','accounts/'+account+'/access/organizations');
+console.log('TRUSTED_ISSUER_AVAILABLE='+/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(organization?.auth_domain||''));
+const methods=await check('ACCESS_IDENTITY_PROVIDERS','accounts/'+account+'/access/identity_providers');
+if(Array.isArray(methods))console.log('IDENTITY_PROVIDER_COUNT='+methods.length);
+const users=await check('ACCESS_USERS','accounts/'+account+'/access/users?per_page=100');
+if(Array.isArray(users))console.log('ACCESS_USER_COUNT='+users.length);
+// Never infer the administrator from an unrelated existing user.
+const accounts=await check('ACCESSIBLE_ACCOUNTS','accounts?per_page=50');
+if(Array.isArray(accounts)){
+ console.log('VISIBLE_ACCOUNT_COUNT='+accounts.length);
+ console.log('CONFIGURED_ACCOUNT_IN_VISIBLE_LIST='+accounts.some(a=>a.id===account));
+ let alternateMatches=0;
+ for(const other of accounts.filter(a=>a.id!==account).slice(0,10)){
+  const otherApps=await check('ALTERNATE_ACCOUNT_ACCESS_APPLICATIONS','accounts/'+other.id+'/access/apps?per_page=100');
+  if(Array.isArray(otherApps))alternateMatches+=otherApps.filter(a=>JSON.stringify([a.domain,a.destinations]).includes('mhy-media-admin-trial')).length;
+ }
+ console.log('ALTERNATE_ACCOUNT_TRIAL_ACCESS_MATCHES='+alternateMatches);
+ console.log('ACCOUNT_INVENTORY_COMPLETE='+(accounts.length<50&&accounts.length<=11));
+}
 console.log('NO_MUTATIONS; DEPLOYMENT_LOCKED; actual MFA login is not tested.');
