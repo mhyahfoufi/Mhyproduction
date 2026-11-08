@@ -1,4 +1,4 @@
-name: Trial Cloudflare protected repair and preflight
+name: Trial Cloudflare Access security audit
 on:
   push:
     branches: [mhy-library-admin-20261107]
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Repair incompatible trial MFA selector while preserving owner-only TOTP
+      - name: Inspect denied trial login and policy conditions without changing Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -52,36 +52,11 @@ jobs:
           const since=new Date(Date.now()-48*3600000).toISOString(),until=new Date().toISOString();
           const logs=await api('access/logs/access_requests?limit=100&direction=desc&since='+encodeURIComponent(since)+'&until='+encodeURIComponent(until));
           if(Array.isArray(logs)){const relevant=logs.filter(l=>l.app_uid===app.id||l.app_domain===host).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));console.log('RECENT_TRIAL_LOG_COUNT='+relevant.length);for(const l of relevant.slice(0,8))console.log('ACCESS_EVENT='+JSON.stringify({time:l.created_at,allowed:l.allowed,action:l.action,ownerMatch:owner?l.user_email?.toLowerCase().trim()===owner:undefined,connectionType:Array.isArray(idps)?idps.find(p=>p.id===l.connection)?.type:undefined,fields:Object.keys(l).filter(k=>!/email|ip|uid|ray|connection/i.test(k))}));}
+          const allow=ps?.filter(p=>p.decision==='allow')||[];
+          const ownerOnly=Boolean(owner)&&ps?.length===1&&allow[0]?.name==='MHY Admin Only'&&allow[0]?.include?.length===1&&allow[0].include[0].email?.email?.toLowerCase().trim()===owner&&!(allow[0].exclude||[]).length;
+          const policyMfa=allow[0]?.mfa_config;
+          const policyTotp=policyMfa?.mfa_disabled===false&&policyMfa.allowed_authenticators?.length===1&&policyMfa.allowed_authenticators[0]==='totp';
+          console.log('OWNER_ONLY_POLICY_VERIFIED='+ownerOnly+'; POLICY_TOTP_REQUIRED='+policyTotp+'; UNSUPPORTED_IDP_MFA_SELECTOR='+(allow[0]?.require||[]).some(r=>r.auth_method?.auth_method==='mfa'));
           console.log('READ_ONLY_AUDIT_COMPLETE; NO_CLOUDFLARE_MUTATIONS; NO_NEW_LOGIN_REQUESTED');
           
-          async function write(path,body){
-           const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/'+path,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)});
-           const d=await r.json().catch(()=>null);
-           if(!r.ok||d?.success!==true)throw Error('Policy write refused HTTP='+r.status+' codes='+(d?.errors||[]).map(e=>Number(e.code)).join(','));
-          }
-          const liveApp=await api('access/apps/'+app.id),liveOrg=await api('access/organizations'),livePolicies=await api('access/apps/'+app.id+'/policies');
-          if(!owner||!Array.isArray(livePolicies)||livePolicies.length!==1)throw Error('Exclusive owner policy not established');
-          const target=livePolicies[0];
-          if(target.name!=='MHY Admin Only'||target.decision!=='allow'||target.include?.length!==1||target.include[0].email?.email?.toLowerCase().trim()!==owner||target.exclude?.length)throw Error('Unexpected policy; no mutation');
-          const mfa=liveApp?.mfa_config,globalMfa=liveOrg?.mfa_config;
-          if(mfa?.mfa_disabled!==false||!mfa.allowed_authenticators?.length||!mfa.allowed_authenticators.every(x=>x==='totp')||!globalMfa?.allowed_authenticators?.includes('totp'))throw Error('Independent TOTP protection not verified');
-          if(!Array.isArray(idps)||idps.length!==1||idps[0].type!=='cloudflare')throw Error('Unexpected IdP configuration');
-          const required=target.require||[];
-          if(required.length!==1||required[0].auth_method?.auth_method!=='mfa')throw Error('Expected unsupported MFA rule absent; no mutation');
-          const shared=await api('access/policies/'+target.id);
-          if(!shared||shared.app_count!==1)throw Error('Policy is shared or exclusive association unavailable');
-          for(const other of apps.filter(a=>a.id!==app.id)){
-           const policies=await api('access/apps/'+other.id+'/policies');
-           if(!Array.isArray(policies)||policies.some(p=>p.id===target.id))throw Error('Cannot prove exclusive trial association');
-          }
-          if(shared.decision!=='allow'||JSON.stringify(shared.include)!==JSON.stringify(target.include)||JSON.stringify(shared.require)!==JSON.stringify(target.require))throw Error('Policy changed during audit');
-          const body={...shared,require:[],mfa_config:{...mfa}};
-          for(const k of ['id','created_at','updated_at','app_count','precedence','reusable'])delete body[k];
-          await write('access/policies/'+target.id,body);
-          const after=await api('access/apps/'+app.id+'/policies'),sharedAfter=await api('access/policies/'+target.id),appAfter=await api('access/apps/'+app.id),orgAfter=await api('access/organizations');
-          const p=after?.find(p=>p.id===target.id);
-          const unchangedOwner=p?.decision==='allow'&&JSON.stringify(p.include)===JSON.stringify(target.include)&&JSON.stringify(p.exclude||[])===JSON.stringify(target.exclude||[])&&p.precedence===target.precedence;
-          const independentMfa=[p?.mfa_config,sharedAfter?.mfa_config,appAfter?.mfa_config].every(x=>x?.mfa_disabled===false&&x.allowed_authenticators?.length===1&&x.allowed_authenticators[0]==='totp'&&x.session_duration===mfa.session_duration)&&orgAfter?.mfa_config?.allowed_authenticators?.includes('totp');
-          if(!unchangedOwner||!independentMfa||p.require?.length||after.length!==1)throw Error('Policy readback failed; do not request login');
-          console.log('REPAIR_READBACK='+JSON.stringify({ownerOnly:unchangedOwner,independentTOTPRequired:independentMfa,unsupportedIdpMfaRuleRemoved:true,precedenceUnchanged:true,otherPoliciesAdded:false,bypass:false,everyone:false,liveLoginTested:false,logsReadable:false}));
           NODE
