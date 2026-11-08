@@ -48,13 +48,13 @@ if(Array.isArray(apps)){
 }
 // Independent checks continue even when Access has no application.
 const bucket=await check('PRIVATE_BUCKET_EXISTS','accounts/'+account+'/r2/buckets/mhyproduction-private-media');
-console.log('EXPECTED_BUCKET_IN_CONFIGURED_ACCOUNT='+Boolean(bucket?.name==='mhyproduction-private-media'));
+console.log('EXPECTED_BUCKET_IN_CONFIGURED_ACCOUNT='+(bucket?bucket.name==='mhyproduction-private-media':'unknown'));
 const managed=await check('PRIVATE_BUCKET_MANAGED_DOMAIN','accounts/'+account+'/r2/buckets/mhyproduction-private-media/domains/managed');
 const custom=await check('PRIVATE_BUCKET_CUSTOM_DOMAINS','accounts/'+account+'/r2/buckets/mhyproduction-private-media/domains/custom');
-console.log('R2_MANAGED_PUBLIC_ACCESS_DISABLED='+(managed?.enabled===false));
-console.log('R2_CUSTOM_PUBLIC_ACCESS_DISABLED='+(Array.isArray(custom?.domains)&&custom.domains.every(d=>d.enabled===false)));
+console.log('R2_MANAGED_PUBLIC_ACCESS_DISABLED='+(managed?managed.enabled===false:'unknown'));
+console.log('R2_CUSTOM_PUBLIC_ACCESS_DISABLED='+(Array.isArray(custom?.domains)?custom.domains.every(d=>d.enabled===false):'unknown'));
 const organization=await check('ACCESS_ORGANIZATION','accounts/'+account+'/access/organizations');
-console.log('TRUSTED_ISSUER_AVAILABLE='+/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(organization?.auth_domain||''));
+console.log('TRUSTED_ISSUER_AVAILABLE='+(organization?/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(organization.auth_domain||''):'unknown'));
 const methods=await check('ACCESS_IDENTITY_PROVIDERS','accounts/'+account+'/access/identity_providers');
 if(Array.isArray(methods))console.log('IDENTITY_PROVIDER_COUNT='+methods.length);
 const users=await check('ACCESS_USERS','accounts/'+account+'/access/users?per_page=100');
