@@ -47,9 +47,7 @@ await task('ACCESS_REPAIR',async()=>{
  const after=await api('access/apps/'+app.id+'/policies');
  if(!after.filter(p=>p.decision==='allow').every(p=>p.require?.some(r=>r.auth_method?.auth_method==='mfa')))throw Error('MFA readback failed');
  console.log('MFA_POLICY_READBACK=true; LIVE_MFA_LOGIN=false');
- const org=await api('access/organizations');if(!/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(org.auth_domain||''))throw Error('Issuer invalid');
- issuer='https://'+org.auth_domain;aud=app.aud;
- const idps=await api('access/identity_providers');console.log('IDP_TYPES='+JSON.stringify(idps.map(p=>p.type)));
+
 });
 await task('TRIAL_BINDINGS_REPAIR',async()=>{
  const path='workers/scripts/'+trial+'/settings';const settings=await api(path);
