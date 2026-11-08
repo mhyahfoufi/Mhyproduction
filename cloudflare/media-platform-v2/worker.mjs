@@ -33,7 +33,7 @@ export function makeWorker(verify=authenticate){const audience=createEngagement(
  if(path.startsWith('/admin')||path.startsWith('/api/admin/')){
   user=await verify(req,env);
   if(req.method!=='GET'&&req.method!=='HEAD'){if(!env.ADMIN_RATE_LIMIT)deny(503,'Administrative rate limit required');const rate=await env.ADMIN_RATE_LIMIT.limit({key:user.sub});if(!rate.success)deny(429,'Too many requests');const origin=req.headers.get('Origin');if(origin!==url.origin||req.headers.get('X-MHY-Admin')!=='1')deny(403,'Same-origin administrative request required')}
-  if(path.startsWith('/admin')){if(!env.ADMIN_ASSETS)deny(503,'Admin assets unavailable');const u=new URL(req.url);u.pathname=u.pathname.replace(/^\/admin\/?/,'/');if(u.pathname==='/')u.pathname='/index.html';const response=await env.ADMIN_ASSETS.fetch(new Request(u,req));const headers=new Headers(response.headers);headers.set('Cache-Control','no-store');headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'");return new Response(response.body,{status:response.status,headers})}
+  if(path.startsWith('/admin')){if(!env.ADMIN_ASSETS)deny(503,'Admin assets unavailable');const u=new URL(req.url);u.pathname=u.pathname.replace(/^\/admin\/?/,'/');if(u.pathname==='/')u.pathname='/index.html';const response=await env.ADMIN_ASSETS.fetch(new Request(u,req));const headers=new Headers(response.headers);headers.set('Cache-Control','no-store');headers.set('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; media-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'");return new Response(response.body,{status:response.status,headers})}
   if(path==='/api/admin/session')return json({authenticated:true,email:user.email});
  }
  configured(env);
@@ -45,7 +45,7 @@ export function makeWorker(verify=authenticate){const audience=createEngagement(
   const headers=new Headers({'Content-Type':TYPES[r.ext],'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Accept-Ranges':'bytes','Content-Disposition':download?'attachment; filename="'+r.id+'.'+r.ext+'"':'inline'});
   const head=await env.MEDIA_BUCKET.head(r.objectKey);if(!head)deny(404,'Not found');let range;
   const h=req.headers.get('Range');if(h){const m=/^bytes=(\d+)-(\d*)$/.exec(h);if(!m)deny(416,'Invalid range');const offset=Number(m[1]),end=m[2]?Math.min(Number(m[2]),head.size-1):head.size-1;if(!Number.isSafeInteger(offset)||!Number.isSafeInteger(end)||offset>end||offset>=head.size)deny(416,'Invalid range');range={offset,length:end-offset+1};headers.set('Content-Range',`bytes ${offset}-${end}/${head.size}`)}
-  headers.set('Content-Length',String(range?range.length:head.size));if(req.method==='HEAD')return new Response(null,{headers});const object=await env.MEDIA_BUCKET.get(r.objectKey,range?{range}:{});if(!object)deny(404,'Not found');return new Response(object.body,{status:range?206:200,headers});
+  headers.set('Content-Length',String(range?range.length:head.size));if(req.method==='HEAD')return new Response(null,{status:range?206:200,headers});const object=await env.MEDIA_BUCKET.get(r.objectKey,range?{range}:{});if(!object)deny(404,'Not found');return new Response(object.body,{status:range?206:200,headers});
  }
  if(!user)deny(404,'Not found');
  if(path==='/api/admin/records'&&req.method==='GET')return json({items:(await records(env,'records')).filter(r=>!r.deleted)});
