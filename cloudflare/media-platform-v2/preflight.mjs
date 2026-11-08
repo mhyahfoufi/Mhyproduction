@@ -34,6 +34,7 @@ if(identity?.id){
 await check('TRIAL_DEPLOYMENT_READ','accounts/'+account+'/workers/scripts/mhy-media-admin-trial/deployments');
 const apps=await check('ACCESS_APPLICATIONS','accounts/'+account+'/access/apps?per_page=100');
 if(Array.isArray(apps)){
+ console.log('ACCESS_APPLICATION_COUNT='+apps.length);
  const trial=apps.filter(a=>JSON.stringify([a.domain,a.destinations]).includes('mhy-media-admin-trial'));
  console.log('MATCHING_TRIAL_ACCESS_APPS='+trial.length);
  for(const app of trial){
