@@ -18,6 +18,8 @@ try{
  const settings=await api('workers/scripts/mhy-media-admin-trial/settings');
  if(!settings.bindings?.some(b=>b.type==='r2_bucket'&&b.name==='MEDIA_BUCKET'&&b.bucket_name==='mhyproduction-private-media'))fail('Existing private R2 binding mismatch');
  const apps=await api('access/apps?per_page=100');
+ console.log('ACCESS_API_READABLE=true');
+ console.log('TRIAL_ACCESS_APPLICATIONS='+ (Array.isArray(apps)?apps.filter(a=>/^mhy-media-admin-trial\.[a-z0-9-]+\.workers\.dev$/.test(a.domain||'')).length:0));
  if(!Array.isArray(apps)||apps.length>=100)fail('Complete Access application inventory required');
  const vars=Object.fromEntries((settings.bindings||[]).filter(b=>b.type==='plain_text').map(b=>[b.name,b.text]));
  if(!/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(vars.ACCESS_ISSUER||'')||!vars.ACCESS_AUD||!vars.ADMIN_SUB||!vars.ADMIN_EMAIL)fail('Existing administrator identity configuration missing');
