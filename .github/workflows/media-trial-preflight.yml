@@ -1,0 +1,25 @@
+name: Trial Cloudflare read-only preflight
+on:
+  push:
+    branches: [mhy-library-admin-20261107]
+    paths:
+      - '.github/workflows/media-trial-preflight.yml'
+      - 'cloudflare/media-platform-v2/preflight.mjs'
+permissions:
+  contents: read
+jobs:
+  preflight:
+    if: github.ref == 'refs/heads/mhy-library-admin-20261107'
+    environment: cloudflare-media
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check existing credentials and trial security without changing Cloudflare
+        run: node cloudflare/media-platform-v2/preflight.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
