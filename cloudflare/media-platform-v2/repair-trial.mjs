@@ -4,7 +4,7 @@ if(process.env.GITHUB_REF!=='refs/heads/mhy-library-admin-20261107'||!/^[a-f0-9]
 async function api(path,method='GET',body){
  const headers={Authorization:'Bearer '+token};if(body&&!(body instanceof FormData))headers['Content-Type']='application/json';
  const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/'+path,{method,headers,body:body instanceof FormData?body:body?JSON.stringify(body):undefined});
- const d=await r.json().catch(()=>null);if(!r.ok||d?.success!==true)throw Error('HTTP '+r.status+' codes='+(d?.errors||[]).map(e=>Number(e.code)).join(','));
+ const d=await r.json().catch(()=>null);if(!r.ok||d?.success!==true)throw Error('HTTP '+r.status+' codes='+(d?.errors||[]).map(e=>Number(e.code)).join(',')+' reason='+String(d?.errors?.[0]?.message||'').split(token).join('[redacted]').split(account).join('[account]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+[.][A-Z]{2,}/gi,'[email]').replace(/[a-f0-9]{24,}/gi,'[id]').slice(0,250));
  return d.result;
 }
 async function task(name,fn){try{await fn();console.log(name+'=VERIFIED')}catch(e){console.log(name+'=BLOCKED '+e.message)}}
@@ -34,6 +34,10 @@ await task('ACCESS_REPAIR',async()=>{
  const emails=allow.flatMap(p=>(p.include||[]).map(r=>r.email?.email));
  if(emails.some(x=>!x)||new Set(emails.map(x=>x.toLowerCase())).size!==1)throw Error('Unique owner email not established by existing policies');
  ownerEmail=emails[0];
+ const org=await api('access/organizations');if(!/^[a-z0-9-]+[.]cloudflareaccess[.]com$/.test(org.auth_domain||''))throw Error('Issuer invalid');
+ issuer='https://'+org.auth_domain;aud=app.aud;
+ const idps=await api('access/identity_providers');console.log('IDP_TYPES='+JSON.stringify(idps.map(p=>p.type)));
+ console.log('TRIAL_LOGIN_URL=https://'+host+'/admin/');
  for(const p of allow){
  if(!p.require?.some(r=>r.auth_method?.auth_method==='mfa')){
  const body={name:p.name,decision:p.decision,precedence:p.precedence,include:p.include,exclude:p.exclude||[],require:[...(p.require||[]),{auth_method:{auth_method:'mfa'}}],...(p.session_duration?{session_duration:p.session_duration}:{})};
