@@ -22,6 +22,12 @@ try{
  console.log('TRIAL_ACCESS_APPLICATIONS='+ (Array.isArray(apps)?apps.filter(a=>/^mhy-media-admin-trial\.[a-z0-9-]+\.workers\.dev$/.test(a.domain||'')).length:0));
  if(!Array.isArray(apps)||apps.length>=100)fail('Complete Access application inventory required');
  const vars=Object.fromEntries((settings.bindings||[]).filter(b=>b.type==='plain_text').map(b=>[b.name,b.text]));
+ const required=['ACCESS_ISSUER','ACCESS_AUD','ADMIN_SUB','ADMIN_EMAIL'];
+ for(const name of required){
+  const binding=settings.bindings.find(b=>b.name===name);
+  console.log(name+'_STATE='+(!binding?'absent':binding.type==='plain_text'?(binding.text?'readable':'empty'):'unreadable'));
+ }
+ if(!apps.some(a=>/^mhy-media-admin-trial\.[a-z0-9-]+\.workers\.dev$/.test(a.domain||'')))fail('No Access application covers the full trial hostname. Deployment blocked before MFA or identity verification.');
  if(!/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(vars.ACCESS_ISSUER||'')||!vars.ACCESS_AUD||!vars.ADMIN_SUB||!vars.ADMIN_EMAIL)fail('Existing administrator identity configuration missing');
  const matching=apps.filter(a=>a.aud===vars.ACCESS_AUD&&/^mhy-media-admin-trial\.[a-z0-9-]+\.workers\.dev$/.test(a.domain||''));
  if(matching.length!==1)fail('One Access application covering the entire trial hostname is required');

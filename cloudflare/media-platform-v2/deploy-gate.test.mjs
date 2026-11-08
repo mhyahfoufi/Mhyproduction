@@ -14,6 +14,7 @@ async function run(change={}){
  const app={id:'app',aud:'trial-aud',domain:'mhy-media-admin-trial.example.workers.dev'};
  const policy={decision:'allow',include:[{email:{email:'owner@example.com'}}],require:[{auth_method:{auth_method:'mfa'}}]};
  const responses={settings,apps:[app],policies:[policy],managed:{enabled:false},custom:{domains:[]}};
+ if(change.noApp)responses.apps=[];
  if(change.bypass)responses.policies.push({decision:'bypass'});
  if(change.noMfa)policy.require=[];
  if(change.public)responses.managed.enabled=true;
@@ -27,7 +28,7 @@ async function run(change={}){
  }finally{await rm(root,{recursive:true,force:true})}
 }
 test('deployment gate rejects absent Access, bypass, missing MFA, public R2, broad allow, wrong host/branch and unverified login',async()=>{
- for(const option of ['accessDisabled','bypass','noMfa','public','everyone','wrongHost','wrongBranch','unverified']){
+ for(const option of ['accessDisabled','noApp','bypass','noMfa','public','everyone','wrongHost','wrongBranch','unverified']){
  const r=await run({[option]:true});assert.equal(r.status,1,option);assert.deepEqual(r.config.vars,{},option);
  }
 });
