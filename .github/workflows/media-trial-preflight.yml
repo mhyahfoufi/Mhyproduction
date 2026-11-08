@@ -45,6 +45,23 @@ jobs:
           const idps=await api('access/identity_providers');
           if(Array.isArray(idps))console.log('IDPS='+JSON.stringify(idps.map(p=>({type:p.type,enabledForApp:!(app.allowed_idps?.length)||app.allowed_idps.includes(p.id)}))));
           console.log('APP_AUTH='+JSON.stringify({type:app.type,allowedIdpCount:app.allowed_idps?.length,autoRedirect:app.auto_redirect_to_identity,appLauncherVisible:app.app_launcher_visible}));
+          const launchers=apps.filter(a=>a.type==='app_launcher');
+          console.log('APP_LAUNCHER_COUNT='+launchers.length);
+          console.log('TRIAL_TILE_VISIBILITY_IS_NOT_LAUNCHER_ENABLEMENT=true');
+          for(const launcher of launchers){
+           const lp=await api('access/apps/'+launcher.id+'/policies');
+           const la=Array.isArray(lp)?lp.filter(p=>p.decision==='allow'):[];
+           console.log('LAUNCHER_POLICY_READABLE='+Array.isArray(lp));
+           console.log('LAUNCHER_OWNER_ONLY='+Boolean(owner&&la.length===1&&lp.length===1&&la[0].include?.length===1&&la[0].include[0].email?.email?.toLowerCase().trim()===owner&&!(la[0].exclude||[]).length));
+           console.log('LAUNCHER_BYPASS_PRESENT='+(Array.isArray(lp)?lp.some(p=>['bypass','non_identity'].includes(p.decision)):'unknown'));
+          }
+          console.log('ADMIN_SUB_CONFIGURED='+Boolean(settings?.bindings?.some(b=>b.name==='ADMIN_SUB'&&(b.type!=='plain_text'||Boolean(b.text)))));
+          console.log('ADMIN_RATE_LIMIT_BOUND='+Boolean(settings?.bindings?.some(b=>b.name==='ADMIN_RATE_LIMIT'&&b.type==='ratelimit')));
+          const managed=await api('r2/buckets/mhyproduction-private-media/domains/managed');
+          const custom=await api('r2/buckets/mhyproduction-private-media/domains/custom');
+          console.log('PRIVATE_R2_BINDING_MATCH='+Boolean(settings?.bindings?.some(b=>b.type==='r2_bucket'&&b.name==='MEDIA_BUCKET'&&b.bucket_name==='mhyproduction-private-media')));
+          console.log('R2_MANAGED_ACCESS_DISABLED='+(managed?managed.enabled===false:'unknown'));
+          console.log('R2_CUSTOM_ACCESS_DISABLED='+(Array.isArray(custom?.domains)?custom.domains.every(d=>d.enabled===false):'unknown'));
           const org=await api('access/organizations');
           console.log('ORG_MFA='+JSON.stringify(org?.mfa_config||null));
           console.log('APP_MFA='+JSON.stringify(app.mfa_config||null));
