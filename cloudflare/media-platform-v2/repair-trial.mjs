@@ -11,7 +11,7 @@ async function task(name,fn){try{await fn();console.log(name+'=VERIFIED')}catch(
 let app,ownerEmail,issuer,aud;
 await task('ACCESS_REPAIR',async()=>{
  const apps=await api('access/apps?per_page=100');if(!Array.isArray(apps)||apps.length>=100)throw Error('Incomplete app inventory');
- const candidates=apps.filter(a=>a.name===trial||a.name?.toLowerCase()===trial.toLowerCase());
+ const candidates=apps.filter(a=>a.name?.toLowerCase().includes(trial));
  if(candidates.length!==1)throw Error('Exactly one named trial app required; refusing unrelated application changes');
  app=await api('access/apps/'+candidates[0].id);
  console.log('TRIAL_DESTINATION_TYPES='+JSON.stringify((app.destinations||[]).map(d=>({type:d.type,keys:Object.keys(d).filter(k=>k!=='overrides')}))));
