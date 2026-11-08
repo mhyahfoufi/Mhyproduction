@@ -10,6 +10,7 @@ async function check(label,path){
  if(!d&&r.status===403)console.log(label+': NON_JSON_SECURITY_OR_GATEWAY_DENIAL');
  for(const e of d?.errors||[]){
  console.log(label+': error_code='+Number(e.code));
+ const safe=String(e.message||'').split(token).join('[redacted]').split(account).join('[redacted]').replace(/https?:\/\/\S+/g,'[url]').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[email]').replace(/[a-f0-9]{24,}/gi,'[id]').replace(/[^\x20-\x7e]/g,' ').slice(0,220); console.log(label+': reason='+safe);
  const m=String(e.message||'').toLowerCase();
  console.log(label+': authentication_error='+/authenticat|unauthoriz|permission/.test(m)+', security_restriction='+/ip address|ip restriction|firewall|blocked|not allowed from/.test(m));
  }
