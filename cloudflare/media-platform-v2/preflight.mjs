@@ -73,3 +73,24 @@ if(Array.isArray(accounts)){
  console.log('ACCOUNT_INVENTORY_COMPLETE='+(accounts.length<50&&accounts.length<=11));
 }
 console.log('NO_MUTATIONS; DEPLOYMENT_LOCKED; actual MFA login is not tested.');
+
+// Inspect configuration shape without exposing administrator identity or app IDs.
+if(settings){
+ for(const name of ['ACCESS_ISSUER','ACCESS_AUD','ADMIN_SUB','ADMIN_EMAIL','ADMIN_RATE_LIMIT']){
+ const b=settings.bindings?.find(b=>b.name===name);
+ console.log(name+'_BINDING_STATE='+(!b?'absent':b.type==='plain_text'?(b.text?'readable':'empty'):b.type));
+ }
+}
+if(Array.isArray(apps))for(const [index,app] of apps.entries()){
+ console.log('APP_'+index+'_TYPE='+String(app.type).replace(/[^a-z_]/gi,''));
+ console.log('APP_'+index+'_HAS_DOMAIN='+Boolean(app.domain));
+ console.log('APP_'+index+'_HAS_DESTINATIONS='+Boolean(app.destinations?.length));
+ console.log('APP_'+index+'_TRIAL_NAME_MATCH='+JSON.stringify([app.name,app.domain,app.destinations]).includes('mhy-media-admin-trial'));
+ const ps=await check('APP_'+index+'_POLICIES','accounts/'+account+'/access/apps/'+app.id+'/policies');
+ if(Array.isArray(ps)){
+ console.log('APP_'+index+'_ALLOW_COUNT='+ps.filter(p=>p.decision==='allow').length);
+ console.log('APP_'+index+'_BYPASS_COUNT='+ps.filter(p=>['bypass','non_identity'].includes(p.decision)).length);
+ console.log('APP_'+index+'_ALL_ALLOW_REQUIRE_MFA='+ps.filter(p=>p.decision==='allow').every(p=>p.require?.some(r=>r.auth_method?.auth_method==='mfa')));
+ console.log('APP_'+index+'_SINGLE_EMAIL_ALLOW='+ps.filter(p=>p.decision==='allow').some(p=>p.include?.length===1&&Boolean(p.include[0].email?.email)));
+ }
+}
