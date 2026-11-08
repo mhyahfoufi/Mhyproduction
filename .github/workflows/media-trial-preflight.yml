@@ -45,6 +45,10 @@ jobs:
           const idps=await api('access/identity_providers');
           if(Array.isArray(idps))console.log('IDPS='+JSON.stringify(idps.map(p=>({type:p.type,enabledForApp:!(app.allowed_idps?.length)||app.allowed_idps.includes(p.id)}))));
           console.log('APP_AUTH='+JSON.stringify({type:app.type,allowedIdpCount:app.allowed_idps?.length,autoRedirect:app.auto_redirect_to_identity,appLauncherVisible:app.app_launcher_visible}));
+          const org=await api('access/organizations');
+          console.log('ORG_MFA='+JSON.stringify(org?.mfa_config||null));
+          console.log('APP_MFA='+JSON.stringify(app.mfa_config||null));
+          for(const p of ps||[]){console.log('POLICY_MFA='+JSON.stringify(p.mfa_config||null));}
           const since=new Date(Date.now()-48*3600000).toISOString(),until=new Date().toISOString();
           const logs=await api('access/logs/access_requests?limit=100&direction=desc&since='+encodeURIComponent(since)+'&until='+encodeURIComponent(until));
           if(Array.isArray(logs)){const relevant=logs.filter(l=>l.app_uid===app.id||l.app_domain===host).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));console.log('RECENT_TRIAL_LOG_COUNT='+relevant.length);for(const l of relevant.slice(0,8))console.log('ACCESS_EVENT='+JSON.stringify({time:l.created_at,allowed:l.allowed,action:l.action,ownerMatch:owner?l.user_email?.toLowerCase().trim()===owner:undefined,connectionType:Array.isArray(idps)?idps.find(p=>p.id===l.connection)?.type:undefined,fields:Object.keys(l).filter(k=>!/email|ip|uid|ray|connection/i.test(k))}));}
