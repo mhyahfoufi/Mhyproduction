@@ -41,7 +41,19 @@ await task('ACCESS_REPAIR',async()=>{
  for(const p of allow){
  if(!p.require?.some(r=>r.auth_method?.auth_method==='mfa')){
  const body={name:p.name,decision:p.decision,precedence:p.precedence,include:p.include,exclude:p.exclude||[],require:[...(p.require||[]),{auth_method:{auth_method:'mfa'}}],...(p.session_duration?{session_duration:p.session_duration}:{})};
- await api('access/apps/'+app.id+'/policies/'+p.id,'PUT',body);
+ try{await api('access/apps/'+app.id+'/policies/'+p.id,'PUT',body)}
+ catch(error){
+ if(!error.message.includes('can not update reusable policies'))throw error;
+ // Never tighten a shared policy attached to another application.
+ const shared=await api('access/policies/'+p.id);
+ if(shared.app_count!==1)throw Error('Reusable policy is shared or association count unavailable');
+ for(const other of apps.filter(a=>a.id!==app.id)){
+ const linked=await api('access/apps/'+other.id+'/policies');
+ if(linked.some(x=>x.id===p.id))throw Error('Reusable policy belongs to another app');
+ }
+ const {precedence,...reusableBody}=body;
+ await api('access/policies/'+p.id,'PUT',reusableBody);
+ }
  }
  }
  const after=await api('access/apps/'+app.id+'/policies');
