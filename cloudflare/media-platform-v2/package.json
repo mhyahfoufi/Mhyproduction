@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test test.mjs engagement/test.mjs",
+    "test": "node --test test.mjs engagement/test.mjs deploy-gate.test.mjs",
     "build": "node build-trial.mjs"
   },
   "dependencies": {
