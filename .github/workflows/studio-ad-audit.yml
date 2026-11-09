@@ -27,7 +27,7 @@ jobs:
           async function read(path){const r=await fetch(base+path,{headers});if(!r.ok){console.log('READ_HTTP='+r.status);throw Error('Storage read denied')};return r;}
           let cursor, objects=[];
           for(let page=0;page<20;page++){
-            const p=new URLSearchParams({prefix:'mhy-platform-v2/',limit:'1000'});if(cursor)p.set('cursor',cursor);
+            const p=new URLSearchParams({prefix:'',limit:'1000'});if(cursor)p.set('cursor',cursor);
             const d=await (await read('/objects?'+p)).json();
             if(d.success===false)throw Error('Storage inventory failed');
             const v=d.result;
@@ -48,5 +48,20 @@ jobs:
             console.log('ADVERTISEMENT='+JSON.stringify({id:r.id,kind:r.kind,workId:r.workId,folderId:r.folderId,status:r.status,categories:r.categories,verified:r.verified,revision:r.revision,ext:r.ext,size:r.size,complete:r.complete,parts:r.parts?.map(x=>x.partNumber),isUpload:key.includes('/uploads/'),originalExists:Boolean(obj),originalSize:obj?.size}));
           }
           console.log('VIDEO_OBJECT_COUNT='+objects.filter(o=>/\.(mp4|webm)$/i.test(o.key||o.name||'')).length);
+          const apiBase='https://api.cloudflare.com/client/v4/accounts/'+account+'/';
+          async function security(path){const r=await fetch(apiBase+path,{headers});const d=await r.json();if(!r.ok||d.success!==true)throw Error('Security verification unavailable HTTP '+r.status);return d.result}
+          const managed=await security('r2/buckets/mhyproduction-private-media/domains/managed');
+          const custom=await security('r2/buckets/mhyproduction-private-media/domains/custom');
+          console.log('PRIVATE_MANAGED_DISABLED='+(managed.enabled===false));
+          console.log('PRIVATE_CUSTOM_DISABLED='+(Array.isArray(custom.domains)&&custom.domains.every(x=>x.enabled===false)));
+          const settings=await security('workers/scripts/mhy-media-admin-trial/settings');
+          const owner=settings.bindings?.find(x=>x.name==='ADMIN_EMAIL'&&x.type==='plain_text')?.text;
+          const apps=await security('access/apps?per_page=100');
+          const matches=apps.filter(x=>x.domain==='mhy-media-admin-trial.mhyprodection.workers.dev');
+          if(matches.length!==1)throw Error('Cannot identify unique Access app');
+          const policies=await security('access/apps/'+matches[0].id+'/policies');
+          const p=policies[0];
+          console.log('OWNER_ONLY_ACCESS='+(Boolean(owner)&&policies.length===1&&p.decision==='allow'&&p.include?.length===1&&p.include[0].email?.email?.toLowerCase()===owner.toLowerCase()&&!(p.exclude||[]).length));
+          console.log('POLICY_TOTP_REQUIRED='+(p.mfa_config?.mfa_disabled===false&&p.mfa_config?.allowed_authenticators?.length===1&&p.mfa_config.allowed_authenticators[0]==='totp'));
           console.log('READ_ONLY_AUDIT_FINISHED');
           NODE
