@@ -1,0 +1,80 @@
+{
+  "status": "owner-reported-created-private-bucket-pending-trial-binding",
+  "existingPublicBucket": {
+    "name": "mhyproductiomhyproduction-median-media",
+    "action": "no changes, no deletes, do not disable public URL"
+  },
+  "proposedPrivateBucket": {
+    "preferredName": "mhyproduction-private-media",
+    "nameAvailability": "created by owner, confirmed 2026-11-08",
+    "publicDevelopmentURL": "disabled",
+    "customDomains": [],
+    "purpose": "new private originals, drafts, administrative metadata and logs; existing files are not moved",
+    "ownerConfirmed": {
+      "date": "2026-11-08",
+      "name": "mhyproduction-private-media",
+      "storageClass": "Standard",
+      "publicAccess": "Disabled",
+      "bucketSizeBytes": 0,
+      "classAOperations": 0,
+      "classBOperations": 0
+    }
+  },
+  "proposedTrialWorker": {
+    "preferredName": "mhy-media-admin-trial",
+    "exists": "not created",
+    "binding": {
+      "name": "MEDIA_BUCKET",
+      "bucket": "mhyproduction-private-media"
+    },
+    "adminAccess": "owner-only Cloudflare Access with verified mandatory MFA",
+    "publicMedia": "Worker policy checked against publication state on each read; no direct public bucket bypass"
+  },
+  "unchanged": [
+    "official GitHub Pages",
+    "main",
+    "Malak AI",
+    "existing R2 objects",
+    "existing public URL",
+    "existing Production Worker"
+  ],
+  "activationPrerequisites": [
+    "secure authenticated Cloudflare account access",
+    "inspect available account resources and limits",
+    "private binding and Access/MFA live tests",
+    "real image and playable-video upload/readback verification"
+  ],
+  "costs": "Not estimated or authorized as a paid purchase; verify account limits before provisioning",
+  "createdResources": [
+    {
+      "type": "R2 bucket",
+      "name": "mhyproduction-private-media",
+      "createdBy": "owner",
+      "verification": "owner report; not independently inspected by agent"
+    }
+  ],
+  "liveTestsPerformed": [],
+  "ownerApproval": {
+    "scope": "Create mhyproduction-private-media for drafts/unpublished content only",
+    "conditions": [
+      "Keep existing public bucket and all objects/URLs untouched",
+      "New r2.dev URL disabled",
+      "No public/custom domains on private bucket",
+      "Authenticated authorized private reads only",
+      "No existing objects moved/deleted/copied",
+      "No production Worker or official website changes",
+      "Trial-only uploads/security tests",
+      "Notify owner of costs or paid configuration before activation"
+    ]
+  },
+  "executionBlocker": "2026-11-08: Cloudflare dashboard redirects agent browser to /login. No authenticated session available. Owner-confirmed bucket creation accepted without requesting repeat checks. Trial Worker binding, owner Access/MFA and real uploads remain unverified. Existing production resources untouched.",
+  "costReview": {
+    "storageClass": "Standard only",
+    "publishedStandardStorageRateUSDPerGBMonthAboveIncludedUsage": 0.015,
+    "classAPerMillionUSD": 4.5,
+    "classBPerMillionUSD": 0.36,
+    "remainingAccountAllowance": "unknown; not a new free allowance per bucket",
+    "source": "https://developers.cloudflare.com/r2/pricing/",
+    "paidActivationAuthorized": false
+  }
+}

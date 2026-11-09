@@ -1,0 +1,15 @@
+{
+  "name": "mhy-media-platform-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test.mjs engagement/test.mjs deploy-gate.test.mjs enable-owner-launcher.test.mjs",
+    "build": "node build-trial.mjs"
+  },
+  "dependencies": {
+    "jose": "6.2.15"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

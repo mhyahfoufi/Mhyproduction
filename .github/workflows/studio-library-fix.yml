@@ -1,0 +1,43 @@
+name: Stabilize studio advertisement library
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/studio-library-fix.yml', 'cloudflare/media-platform-v2/**', 'media-admin/**', 'media-library/catalog.mjs']
+permissions:
+  contents: read
+concurrency:
+  group: mhy-media-admin-trial
+  cancel-in-progress: false
+jobs:
+  stabilize:
+    runs-on: ubuntu-latest
+    environment: cloudflare-media
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci && npm test && node --test public-worker.test.mjs && npm run build
+        working-directory: cloudflare/media-platform-v2
+      - name: Verify existing owner identity, TOTP and private storage without changing security
+        run: node deploy-gate.mjs
+        working-directory: cloudflare/media-platform-v2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          MFA_LOGIN_VERIFIED: 'true'
+      - name: Publish category support to existing protected administration Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare/media-platform-v2
+          wranglerVersion: '4.158.0'
+          command: deploy --config release/wrangler.json
+      - name: Correct only the two existing advertisement records and verify public catalog
+        run: node fix-studio-ads.mjs
+        working-directory: cloudflare/media-platform-v2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
