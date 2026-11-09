@@ -9,7 +9,8 @@ export function makePublicWorker(platform=makeWorker(async()=>{throw Object.assi
   const headers=new Headers({'Access-Control-Allow-Origin':siteOrigin,'Access-Control-Allow-Methods':'GET, HEAD, OPTIONS','Access-Control-Allow-Headers':'Range','Access-Control-Expose-Headers':'Content-Length, Content-Range, Accept-Ranges','Vary':'Origin','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers});
   if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers});
-  const response=await platform.fetch(request,{MEDIA_BUCKET:env.MEDIA_BUCKET,PRIVATE_BUCKET_CONFIRMED:env.PRIVATE_BUCKET_CONFIRMED});
+  const forwarded=request.method==='HEAD'&&url.pathname==='/api/catalog'?new Request(request,{method:'GET'}):request;
+  const response=await platform.fetch(forwarded,{MEDIA_BUCKET:env.MEDIA_BUCKET,PRIVATE_BUCKET_CONFIRMED:env.PRIVATE_BUCKET_CONFIRMED});
   for(const [name,value]of response.headers)if(!['access-control-allow-origin','vary'].includes(name))headers.set(name,value);
   return new Response(request.method==='HEAD'?null:response.body,{status:response.status,headers});
  }};
