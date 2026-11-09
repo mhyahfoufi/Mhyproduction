@@ -1,0 +1,29 @@
+name: Finish advertisement metadata migration
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/studio-binding-migration.yml', 'cloudflare/media-platform-v2/remote-studio-fix.mjs']
+permissions:
+  contents: read
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: cloudflare-media
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: cloudflare/media-platform-v2
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      MFA_LOGIN_VERIFIED: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci && npm test && npm run build && node deploy-gate.mjs
+      - name: Invoke exact metadata migration through existing private bucket binding
+        run: node remote-studio-fix.mjs
+      - name: Verify both existing public works now use advertisement category
+        run: node fix-studio-ads.mjs verify
