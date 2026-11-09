@@ -69,8 +69,8 @@ function render(){
  const [rawCategory,rawWork,folderId]=parts,category=sectionOf(rawCategory),workId=catalog.workAliases.get(rawWork)||rawWork,cat=sections.find(c=>c.id===category);
  const aliasFilter=['studio-music','studio-videos'].includes(rawCategory)?rawCategory:null;
  if(!cat){
+  if(query){root.append(el('h2',t('نتائج البحث','Search results'),'results-title'));const results=catalog.items.filter(i=>matches(catalog.works.get(i.workId),i));const grid=el('div','','grid');for(const id of new Set([...results.map(i=>i.workId),...Array.from(catalog.works.values()).filter(w=>matches(w)).map(w=>w.id)])){const w=catalog.works.get(id),items=results.filter(i=>i.workId===id),section=sectionOf(items[0]?.categories[0]||w.categories?.[0]);if(sections.some(s=>s.id===section))grid.append(card(w,route(section,id),coverOf(w,items)))}root.append(grid);if(!grid.children.length)root.append(el('p',t('لا توجد نتائج مطابقة','No matching results'),'empty'));return}
   const g=el('div','','section-grid');for(const s of sections)g.append(sectionCard(s));root.append(g);
-  if(query){root.append(el('h2',t('نتائج البحث','Search results'),'results-title'));const results=catalog.items.filter(i=>matches(catalog.works.get(i.workId),i));const grid=el('div','','grid');for(const id of new Set(results.map(i=>i.workId))){const w=catalog.works.get(id),items=results.filter(i=>i.workId===id);grid.append(card(w,route(sectionOf(items[0].categories[0]),id),coverOf(w,items)))}root.append(grid);if(!grid.children.length)root.append(el('p',t('لا توجد نتائج مطابقة','No matching results'),'empty'));return}
   root.append(el('h2',t('أحدث الإضافات','Latest additions'),'results-title'));const latest=latestWorks(catalog.items);if(!latest.dated)root.append(el('p',t('حسب ترتيب الفهرس؛ تواريخ نشر الأعمال القديمة غير موثقة.','By catalog order; original publication dates are undocumented.'),'muted'));
   const recent=el('div','','grid latest-grid');for(const i of latest.items){const w=catalog.works.get(i.workId);recent.append(card(w,route(sectionOf(i.categories[0]),i.workId),coverOf(w,catalog.items.filter(x=>x.workId===i.workId))))}root.append(recent);return;
  }
@@ -94,13 +94,13 @@ const SCROLL_KEY='mhy-library-scroll-v2';let restoring=false,positions={};try{po
 function remember(){positions[current]=scrollY;try{sessionStorage.setItem(SCROLL_KEY,JSON.stringify(positions))}catch{}}
 function restore(){restoring=true;const y=Number(positions[current])||0;requestAnimationFrame(()=>requestAnimationFrame(()=>{scrollTo(0,y);requestAnimationFrame(()=>{restoring=false})}))}
 if('scrollRestoration'in history)history.scrollRestoration='manual';
-window.addEventListener('scroll',()=>{if(!restoring)remember()},{passive:true});window.addEventListener('pagehide',()=>{remember();for(const fn of dispose)fn()});
+window.addEventListener('scroll',()=>{if(!restoring&&location.hash===current)remember()},{passive:true});window.addEventListener('pagehide',()=>{remember();for(const fn of dispose)fn()});
 window.addEventListener('hashchange',()=>{restoring=true;current=location.hash;render();restore()});window.addEventListener('pageshow',restore);
 // Save position before fragment navigation; browser/Android Back stays native.
-document.addEventListener('click',e=>{const a=e.target.closest('a');if(a?.getAttribute('href')?.startsWith('#'))remember()},true);
-document.querySelector('#back').onclick=()=>{remember();const p=location.hash.slice(1).split('/');if(p.length>1)p.pop();else p.length=0;location.hash=p.join('/')};
+document.addEventListener('click',e=>{const a=e.target.closest('a');if(a?.getAttribute('href')?.startsWith('#')){remember();if(new URL(a.href).hash!==current)restoring=true}},true);
+document.querySelector('#back').onclick=()=>{remember();const p=location.hash.slice(1).split('/');if(p.length>1)p.pop();else p.length=0;const next=p.join('/');if(next!==location.hash.slice(1))restoring=true;location.hash=next};
 document.querySelector('#language').onclick=()=>{remember();lang=lang==='ar'?'en':'ar';render();restore()};
-search.value=query;search.oninput=()=>{query=search.value;const u=new URL(location.href);if(query)u.searchParams.set('q',query);else u.searchParams.delete('q');history.replaceState(history.state,'',u);render()};
+search.value=query;search.oninput=()=>{remember();query=search.value;const u=new URL(location.href);u.hash='';if(query)u.searchParams.set('q',query);else u.searchParams.delete('q');history.replaceState(history.state,'',u);current=location.hash;render()};
 let loadingStarted=false;
 async function load(){
  if(loadingStarted)remember();loadingStarted=true;restoring=true;loadState='loading';render();try{const r=await fetch(publicBase+'/api/catalog',{credentials:'omit',signal:AbortSignal.timeout(15000),cache:'no-store'});if(!r.ok)throw Error('Catalog unavailable');const data=await r.json();if(!Array.isArray(data.items))throw Error('Invalid catalog');catalog=mergeCatalog(legacy,data.items,index);loadState='ready'}catch{loadState='failed'}render();restore();
