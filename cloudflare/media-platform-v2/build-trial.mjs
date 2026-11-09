@@ -14,10 +14,9 @@ for(const [name,type] of [['index.html','text/html; charset=utf-8'],['admin.js',
 }
 await mkdir(resolve(root,'release'),{recursive:true});
 const entry=`import worker from './worker.mjs';
-import {migrateStudioAds} from './migrate-studio-ads.mjs';
 const files=${JSON.stringify(files)};
 const assets={async fetch(req){const f=files[new URL(req.url).pathname];if(!f)return new Response('Not found',{status:404});return new Response(Uint8Array.from(atob(f.data),c=>c.charCodeAt(0)),{headers:{'Content-Type':f.type,'Cache-Control':'no-store'}})}};
-export default {fetch(req,env,ctx){return worker.fetch(req,{...env,ADMIN_ASSETS:assets},ctx)},scheduled(event,env,ctx){ctx.waitUntil(migrateStudioAds(env))}};`;
+export default {fetch(req,env,ctx){return worker.fetch(req,{...env,ADMIN_ASSETS:assets},ctx)}};`;
 await build({stdin:{contents:entry,resolveDir:root,sourcefile:'trial-entry.mjs'},outfile:resolve(root,'release/worker.mjs'),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:false});
 await writeFile(resolve(root,'release/wrangler.json'),JSON.stringify({name:'mhy-media-admin-trial',main:'worker.mjs',compatibility_date:'2026-11-01',keep_vars:true,ratelimits:[{name:'ADMIN_RATE_LIMIT',namespace_id:'2026110701',simple:{limit:60,period:60}}],r2_buckets:[{binding:'MEDIA_BUCKET',bucket_name:'mhyproduction-private-media'}],vars:{PRIVATE_BUCKET_CONFIRMED:'false',MFA_POLICY_CONFIRMED:'false',ENGAGEMENT_ENABLED:'false'}},null,2)+'\n');
 console.log('Built isolated trial bundle; admin remains locked until security configuration is verified.');
