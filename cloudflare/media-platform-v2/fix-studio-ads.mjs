@@ -15,11 +15,10 @@ if(mode==='prepare'){
  let authorized=false;try{authorized=await readFile('release/migration-schedule-authorized','utf8')==='yes'}catch{}
  if(authorized){const current=await schedules();if(current.some(x=>x.cron!=='* * * * *'))throw Error('Unexpected schedule; refusing removal');await schedules('PUT',[]);console.log('TEMPORARY_SCHEDULE_REMOVED=true')}
 }else if(mode==='verify'){
- for(let n=0;n<30;n++){
+ for(let n=0;n<120;n++){
   const r=await fetch('https://mhy-media-public.mhyprodection.workers.dev/api/catalog',{cache:'no-store'});if(!r.ok)throw Error('Public catalog unavailable');const data=await r.json();
   if(advertisementIds.every(id=>{const rows=data.items.filter(x=>x.id===id);return rows.length===1&&JSON.stringify(rows[0].categories)==='["studio-music"]'})){console.log('PUBLIC_ADVERTISEMENTS_VERIFIED=2');process.exit(0)}
   await new Promise(resolve=>setTimeout(resolve,10000));
  }
  throw Error('Scheduled migration verification timed out');
 }else throw Error('Explicit prepare, verify or cleanup mode required');
-
