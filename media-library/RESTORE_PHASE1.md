@@ -21,3 +21,10 @@ A branch-only GitHub Actions workflow runs these checks and verifies that backen
 A separate owner-private static preview uses a read-only snapshot of the published public catalog. This avoids changing the existing gateway's origin policy. It contains no administration page or backend credentials. Production source continues to use the original live public gateway after a separately approved merge.
 
 Remaining outside phase 1: activating engagement, assigning unattributed legacy images to particular works, uploading a new real video, real playback/Android verification, and production approval. Neither main nor Cloudflare storage/security settings may be changed by this phase.
+
+## Continuation validation
+
+- Library-home actions now clear a search query before showing the ten section cards.
+- Withdrawing playback consent immediately removes all visible resume buttons; even an obsolete button reference cannot resume after consent is withdrawn.
+- Eight additional in-memory DOM integration tests execute the actual frontend module: ten covers, global alias search, library-home search reset, cross-section/episode rendering, catalog-failure recovery, existing UUID empty-work search, consent withdrawal, and fragment/reload scroll persistence. These are simulated DOM tests, not physical Android or real video playback tests.
+- Total automated checks: 18 restoration/interface tests plus the existing 35 platform/security/gateway tests = 53.

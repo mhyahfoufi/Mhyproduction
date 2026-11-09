@@ -30,8 +30,9 @@ function resume(player,id,parent){
  box.onchange=()=>{
   try{if(box.checked)localStorage.setItem(RESUME_CONSENT,'yes');else clearResume(localStorage)}catch{}
   document.querySelectorAll('.watch-choice input').forEach(x=>x.checked=box.checked);
+  if(!box.checked)document.querySelectorAll('[data-resume]').forEach(b=>b.remove());
  };
- player.addEventListener('loadedmetadata',()=>{try{const p=readResume(localStorage,id,player.duration);if(p!==null){const b=el('button',t('استكمال المشاهدة من ','Resume from ')+Math.floor(p/60)+':'+String(Math.floor(p%60)).padStart(2,'0'));b.type='button';b.onclick=()=>{player.currentTime=p;player.play().catch(()=>{});b.remove()};parent.append(b)}}catch{}});
+ player.addEventListener('loadedmetadata',()=>{try{const p=readResume(localStorage,id,player.duration);if(p!==null){const b=el('button',t('استكمال المشاهدة من ','Resume from ')+Math.floor(p/60)+':'+String(Math.floor(p%60)).padStart(2,'0'));b.type='button';b.dataset.resume='1';b.onclick=()=>{try{if(localStorage.getItem(RESUME_CONSENT)!=='yes'){b.remove();return}}catch{b.remove();return}player.currentTime=p;player.play().catch(()=>{});b.remove()};parent.append(b)}}catch{}});
  let last=0;const remember=()=>{if(Date.now()-last<5000)return;last=Date.now();try{saveResume(localStorage,id,player.currentTime)}catch{}};
  player.addEventListener('timeupdate',remember);player.addEventListener('ended',()=>{try{localStorage.removeItem(RESUME_PREFIX+id)}catch{}});
  dispose.push(()=>{try{if(!player.ended)saveResume(localStorage,id,player.currentTime)}catch{}player.pause()});
@@ -97,7 +98,15 @@ if('scrollRestoration'in history)history.scrollRestoration='manual';
 window.addEventListener('scroll',()=>{if(!restoring&&location.hash===current)remember()},{passive:true});window.addEventListener('pagehide',()=>{remember();for(const fn of dispose)fn()});
 window.addEventListener('hashchange',()=>{restoring=true;current=location.hash;render();restore()});window.addEventListener('pageshow',restore);
 // Save position before fragment navigation; browser/Android Back stays native.
-document.addEventListener('click',e=>{const a=e.target.closest('a');if(a?.getAttribute('href')?.startsWith('#')){remember();if(new URL(a.href).hash!==current)restoring=true}},true);
+document.addEventListener('click',e=>{
+ const a=e.target.closest('a'),href=a?.getAttribute('href');if(!href?.startsWith('#'))return;
+ remember();
+ if(href==='#'){
+  e.preventDefault();query='';search.value='';const u=new URL(location.href);u.searchParams.delete('q');history.replaceState(history.state,'',u);
+  if(location.hash){restoring=true;location.hash=''}else{render();restore()}return;
+ }
+ if(new URL(a.href).hash!==current)restoring=true;
+},true);
 document.querySelector('#back').onclick=()=>{remember();const p=location.hash.slice(1).split('/');if(p.length>1)p.pop();else p.length=0;const next=p.join('/');if(next!==location.hash.slice(1))restoring=true;location.hash=next};
 document.querySelector('#language').onclick=()=>{remember();lang=lang==='ar'?'en':'ar';render();restore()};
 search.value=query;search.oninput=()=>{remember();query=search.value;const u=new URL(location.href);u.hash='';if(query)u.searchParams.set('q',query);else u.searchParams.delete('q');history.replaceState(history.state,'',u);current=location.hash;render()};
