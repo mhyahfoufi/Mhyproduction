@@ -66,6 +66,21 @@ jobs:
           console.log('ORG_MFA='+JSON.stringify(org?.mfa_config||null));
           console.log('APP_MFA='+JSON.stringify(app.mfa_config||null));
           for(const p of ps||[]){console.log('POLICY_MFA='+JSON.stringify(p.mfa_config||null));}
+
+          // Read trusted identity without logging emails, IDs, sessions or assertions.
+          const users=await api('access/users?per_page=100&email='+encodeURIComponent(owner||''));
+          console.log('ACCESS_USERS_READABLE='+Array.isArray(users));
+          if(Array.isArray(users)&&owner){
+           const owners=users.filter(u=>u.email?.toLowerCase().trim()===owner);
+           console.log('UNIQUE_OWNER_IDENTITY='+(owners.length===1));
+           if(owners.length===1&&owners[0].id){
+            const identity=await api('access/users/'+encodeURIComponent(owners[0].id)+'/last_seen_identity');
+            console.log('LAST_SEEN_IDENTITY_READABLE='+Boolean(identity));
+            console.log('LAST_SEEN_IDENTITY_OWNER_MATCH='+Boolean(identity?.email?.toLowerCase().trim()===owner));
+            console.log('LAST_SEEN_IDENTITY_UUID_PRESENT='+Boolean(identity?.user_uuid));
+           }
+          }
+
           const since=new Date(Date.now()-48*3600000).toISOString(),until=new Date().toISOString();
           const logs=await api('access/logs/access_requests?limit=100&direction=desc&since='+encodeURIComponent(since)+'&until='+encodeURIComponent(until));
           if(Array.isArray(logs)){const relevant=logs.filter(l=>l.app_uid===app.id||l.app_domain===host).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));console.log('RECENT_TRIAL_LOG_COUNT='+relevant.length);for(const l of relevant.slice(0,8))console.log('ACCESS_EVENT='+JSON.stringify({time:l.created_at,allowed:l.allowed,action:l.action,ownerMatch:owner?l.user_email?.toLowerCase().trim()===owner:undefined,connectionType:Array.isArray(idps)?idps.find(p=>p.id===l.connection)?.type:undefined,fields:Object.keys(l).filter(k=>!/email|ip|uid|ray|connection/i.test(k))}));}
