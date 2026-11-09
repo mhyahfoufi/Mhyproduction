@@ -9,11 +9,17 @@ const script=fileURLToPath(new URL('./deploy-gate.mjs',import.meta.url));
 async function run(change={}){
  const root=await mkdtemp(join(tmpdir(),'mhy-gate-'));
  try{
- const vars={ACCESS_ISSUER:'https://example.cloudflareaccess.com',ACCESS_AUD:'trial-aud',ADMIN_SUB:'owner-sub',ADMIN_EMAIL:'owner@example.com',MFA_POLICY_CONFIRMED:'true',PRIVATE_BUCKET_CONFIRMED:'true'};
- const settings={bindings:[{type:'r2_bucket',name:'MEDIA_BUCKET',bucket_name:'mhyproduction-private-media'},...Object.entries(vars).map(([name,text])=>({type:'plain_text',name,text}))]};
+ const vars={ACCESS_ISSUER:'https://example.cloudflareaccess.com',ACCESS_AUD:'trial-aud',ADMIN_SUB:'11111111-1111-1111-1111-111111111111',ADMIN_EMAIL:'owner@example.com',MFA_POLICY_CONFIRMED:'true',PRIVATE_BUCKET_CONFIRMED:'true'};
+ const settings={bindings:[{name:'ADMIN_RATE_LIMIT',type:'ratelimit',simple:{limit:60,period:60}},{type:'r2_bucket',name:'MEDIA_BUCKET',bucket_name:'mhyproduction-private-media'},...Object.entries(vars).map(([name,text])=>({type:'plain_text',name,text}))]};
  const app={id:'app',aud:'trial-aud',domain:'mhy-media-admin-trial.example.workers.dev'};
  const policy={decision:'allow',include:[{email:{email:'owner@example.com'}}],require:[],mfa_config:{mfa_disabled:false,allowed_authenticators:['totp']}};
- const responses={settings,apps:[app],policies:[policy],managed:{enabled:false},custom:{domains:[]}};
+ const responses={users:[{id:'owner-id',email:vars.ADMIN_EMAIL}],identity:{email:vars.ADMIN_EMAIL,user_uuid:vars.ADMIN_SUB},settings,apps:[app],policies:[policy],managed:{enabled:false},custom:{domains:[]}};
+ if(change.noIdentity)responses.identity={};
+ if(change.wrongIdentity)responses.identity.email='stranger@example.com';
+ if(change.ambiguousOwner)responses.users.push({...responses.users[0]});
+ if(change.wrongSubject)settings.bindings.find(b=>b.name==='ADMIN_SUB').text='22222222-2222-2222-2222-222222222222';
+ if(change.noRate)settings.bindings=settings.bindings.filter(b=>b.name!=='ADMIN_RATE_LIMIT');
+ if(change.bootstrap)settings.bindings=settings.bindings.filter(b=>!['ADMIN_SUB','MFA_POLICY_CONFIRMED','PRIVATE_BUCKET_CONFIRMED'].includes(b.name));
  if(change.noApp)responses.apps=[];
  if(change.bypass)responses.policies.push({decision:'bypass'});
  if(change.noMfa)delete policy.mfa_config;
@@ -23,18 +29,20 @@ async function run(change={}){
  if(change.public)responses.managed.enabled=true;
  if(change.wrongHost)app.domain='production.example.com';
  if(change.everyone)policy.include=[{everyone:{}}];
- const mock=`const data=${JSON.stringify(responses)};globalThis.fetch=async url=>{const p=new URL(url).pathname; if(${Boolean(change.accessDisabled)}&&p.endsWith('/access/apps'))return Response.json({success:false,errors:[{message:'access.api.error.not_enabled'}]},{status:403}); const k=p.endsWith('/settings')?'settings':p.endsWith('/apps')?'apps':p.endsWith('/policies')?'policies':p.endsWith('/managed')?'managed':'custom';return Response.json({success:true,result:data[k]})};`;
+ const mock=`const data=${JSON.stringify(responses)};globalThis.fetch=async url=>{const p=new URL(url).pathname; if(${Boolean(change.accessDisabled)}&&p.endsWith('/access/apps'))return Response.json({success:false,errors:[{message:'access.api.error.not_enabled'}]},{status:403}); const k=p.endsWith('/users')?'users':p.endsWith('/last_seen_identity')?'identity':p.endsWith('/settings')?'settings':p.endsWith('/apps')?'apps':p.endsWith('/policies')?'policies':p.endsWith('/managed')?'managed':'custom';return Response.json({success:true,result:data[k]})};`;
  await mkdir(join(root,'release'));
- await writeFile(join(root,'release/wrangler.json'),JSON.stringify({name:'mhy-media-admin-trial',vars:{}}));
+ await writeFile(join(root,'release/wrangler.json'),JSON.stringify({name:'mhy-media-admin-trial',ratelimits:[{name:'ADMIN_RATE_LIMIT',simple:{limit:60,period:60}}],vars:{}}));
  const result=spawnSync(process.execPath,['--import','data:text/javascript,'+encodeURIComponent(mock),script],{cwd:root,encoding:'utf8',env:{...process.env,CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),CLOUDFLARE_API_TOKEN:'test-only',GITHUB_REF:change.wrongBranch?'refs/heads/main':'refs/heads/mhy-library-admin-20261107',MFA_LOGIN_VERIFIED:change.unverified?'false':'true'}});
  return {status:result.status,output:result.stderr,config:JSON.parse(await readFile(join(root,'release/wrangler.json'),'utf8'))};
  }finally{await rm(root,{recursive:true,force:true})}
 }
 test('deployment gate rejects absent Access, bypass, missing MFA, public R2, broad allow, wrong host/branch and unverified login',async()=>{
- for(const option of ['accessDisabled','noApp','bypass','noMfa','disabledMfa','emptyMethods','idpOnly','public','everyone','wrongHost','wrongBranch','unverified']){
+ for(const option of ['noIdentity','wrongIdentity','ambiguousOwner','wrongSubject','noRate','accessDisabled','noApp','bypass','noMfa','disabledMfa','emptyMethods','idpOnly','public','everyone','wrongHost','wrongBranch','unverified']){
  const r=await run({[option]:true});assert.equal(r.status,1,option);assert.deepEqual(r.config.vars,{},option);
  }
 });
 test('deployment gate writes verified existing trial identity only after every check passes',async()=>{
  const r=await run();assert.equal(r.status,0,r.output);assert.equal(r.config.vars.MFA_POLICY_CONFIRMED,'true');assert.equal(r.config.name,'mhy-media-admin-trial');
 });
+
+test('bootstrap resolves only trusted owner and derives confirmation flags from verified controls',async()=>{const r=await run({bootstrap:true});assert.equal(r.status,0,r.output);assert.equal(r.config.vars.ADMIN_SUB,'11111111-1111-1111-1111-111111111111');assert.equal(r.config.vars.PRIVATE_BUCKET_CONFIRMED,'true')});

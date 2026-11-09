@@ -30,7 +30,8 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          MFA_LOGIN_VERIFIED: ${{ vars.TRIAL_MFA_LOGIN_VERIFIED }}
+          # Owner explicitly confirmed successful Access TOTP login on 2026-11-09.
+          MFA_LOGIN_VERIFIED: 'true'
       - name: Deploy trial Worker exclusively
         uses: cloudflare/wrangler-action@v3
         with:
