@@ -5,7 +5,7 @@ import {advertisementIds} from './migrate-studio-ads.mjs';
 const account=process.env.CLOUDFLARE_ACCOUNT_ID?.trim(),token=process.env.CLOUDFLARE_API_TOKEN?.trim();
 if(!/^[a-f0-9]{32}$/i.test(account||'')||!token)throw Error('Existing credentials required');
 const url=`https://api.cloudflare.com/client/v4/accounts/${account}/workers/scripts/mhy-media-admin-trial/schedules`;
-async function schedules(method='GET',body){const r=await fetch(url,{method,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});const d=await r.json();if(!r.ok||!d.success)throw Error('Schedule operation failed '+r.status);return d.result}
+async function schedules(method='GET',body){const r=await fetch(url,{method,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});const d=await r.json();if(!r.ok||!d.success)throw Error('Schedule operation failed '+r.status);return d.result.schedules}
 const mode=process.argv[2];
 if(mode==='prepare'){
  const current=await schedules();if(!Array.isArray(current)||current.length)throw Error('Existing schedules must be preserved; stopping');
@@ -22,3 +22,4 @@ if(mode==='prepare'){
  }
  throw Error('Scheduled migration verification timed out');
 }else throw Error('Explicit prepare, verify or cleanup mode required');
+
