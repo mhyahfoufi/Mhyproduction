@@ -1,0 +1,52 @@
+name: Inspect studio advertisement storage
+on:
+  push:
+    branches: [mhy-library-admin-20261107]
+    paths: ['.github/workflows/studio-ad-audit.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: cloudflare-media
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Read advertisement metadata without changing storage or security
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          const account=process.env.CF_ACCOUNT?.trim(), token=process.env.CF_TOKEN?.trim();
+          if(!/^[a-f0-9]{32}$/i.test(account||'')||!token)throw Error('Missing existing credentials');
+          const base='https://api.cloudflare.com/client/v4/accounts/'+account+'/r2/buckets/mhyproduction-private-media';
+          const headers={Authorization:'Bearer '+token};
+          async function read(path){const r=await fetch(base+path,{headers});if(!r.ok){console.log('READ_HTTP='+r.status);throw Error('Storage read denied')};return r;}
+          let cursor, objects=[];
+          for(let page=0;page<20;page++){
+            const p=new URLSearchParams({prefix:'mhy-platform-v2/',limit:'1000'});if(cursor)p.set('cursor',cursor);
+            const d=await (await read('/objects?'+p)).json();
+            if(d.success===false)throw Error('Storage inventory failed');
+            const v=d.result;
+            const rows=Array.isArray(v)?v:v?.objects;
+            if(!Array.isArray(rows)){console.log('RESULT_FIELDS='+JSON.stringify(Object.keys(v||{})));throw Error('Unexpected inventory shape')}
+            objects.push(...rows);cursor=d.result_info?.cursor||v?.cursor;
+            if(!cursor)break;
+            if(page===19)throw Error('Incomplete inventory');
+          }
+          console.log('OBJECTS='+objects.length);
+          const works=new Set(['80d75cc4-120f-40f1-97e3-57faccca2c94','8242f384-b8a2-4bcc-bfaa-5a5a176cb763']);
+          for(const o of objects){
+            const key=o.key||o.name;if(typeof key!=='string')throw Error('Missing object key');
+            if(!/^mhy-platform-v2\/(records|uploads)\/[a-f0-9-]{36}\.json$/.test(key))continue;
+            const r=await (await read('/objects/'+encodeURIComponent(key))).json();
+            if(!works.has(r.id)&&!works.has(r.workId))continue;
+            const obj=r.objectKey?objects.find(x=>(x.key||x.name)===r.objectKey):null;
+            console.log('ADVERTISEMENT='+JSON.stringify({id:r.id,kind:r.kind,workId:r.workId,folderId:r.folderId,status:r.status,categories:r.categories,verified:r.verified,revision:r.revision,ext:r.ext,size:r.size,complete:r.complete,parts:r.parts?.map(x=>x.partNumber),isUpload:key.includes('/uploads/'),originalExists:Boolean(obj),originalSize:obj?.size}));
+          }
+          console.log('VIDEO_OBJECT_COUNT='+objects.filter(o=>/\.(mp4|webm)$/i.test(o.key||o.name||'')).length);
+          console.log('READ_ONLY_AUDIT_FINISHED');
+          NODE
