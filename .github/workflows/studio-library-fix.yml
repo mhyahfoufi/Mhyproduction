@@ -21,7 +21,7 @@ jobs:
       - run: npm ci && npm test && node --test public-worker.test.mjs && npm run build
         working-directory: cloudflare/media-platform-v2
       - name: Verify existing owner identity, TOTP and private storage without changing security
-        run: node deploy-gate.mjs
+        run: node deploy-gate.mjs && node fix-studio-ads.mjs prepare
         working-directory: cloudflare/media-platform-v2
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -36,7 +36,14 @@ jobs:
           wranglerVersion: '4.158.0'
           command: deploy --config release/wrangler.json
       - name: Correct only the two existing advertisement records and verify public catalog
-        run: node fix-studio-ads.mjs
+        run: node fix-studio-ads.mjs verify
+        working-directory: cloudflare/media-platform-v2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Remove temporary migration schedule from existing Worker
+        if: always()
+        run: node fix-studio-ads.mjs cleanup
         working-directory: cloudflare/media-platform-v2
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
