@@ -1,4 +1,4 @@
-import {publicBase,mergeCatalog} from './catalog.mjs';
+import {publicBase,mergeCatalog} from './catalog.mjs?v=restore-2';
 import {sections,sectionOf,categoriesFor,normalizeSearch} from './sections.mjs';
 import {RESUME_CONSENT,RESUME_PREFIX,readResume,clearResume,saveResume,latestWorks} from './preferences.mjs';
 const legacy=window.MHY_CONTENT||{},index=window.MHY_LIBRARY_INDEX||{};
