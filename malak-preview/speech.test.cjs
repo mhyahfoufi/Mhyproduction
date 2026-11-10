@@ -1,15 +1,18 @@
 'use strict';
-const assert=require('node:assert/strict');const {createSpeech}=require('./malak-speech.js');
-let voices=[],spoken=[],cancels=0,changed,states=[];
-class Utterance{constructor(text){this.text=text;}}
-const synth={getVoices:()=>voices,cancel(){cancels++},speak(u){spoken.push(u)},addEventListener(e,fn){changed=fn},removeEventListener(){}};
-const speech=createSpeech({synth,Utterance,onState:s=>states.push(s)});
-assert.equal(speech.speak('مرحبا'),false);assert.equal(states.at(-1).state,'missing');
-voices=[{name:'Arabic Male',lang:'ar',voiceURI:'male',localService:true},{name:'Salma',lang:'ar-SA',voiceURI:'female'},{name:'English',lang:'en-US',voiceURI:'english'}];changed();
-assert.equal(speech.choose('ar').name,'Salma');speech.select('male');assert.equal(speech.choose('ar').name,'Arabic Male');
-speech.speak('أهلاً. كيفك؟',{rate:1.1,volume:.4});assert.equal(spoken[0].voice.voiceURI,'male');assert.equal(spoken[0].volume,.4);assert.equal(spoken[0].rate,1.1);
-const old=spoken[0];speech.stop();old.onend();assert.equal(spoken.length,1);
-speech.speak('Hello',{lang:'en'});assert.equal(spoken.at(-1).lang,'en-US');spoken.at(-1).onerror({error:'synthesis-failed'});assert.equal(states.at(-1).state,'error');
-speech.speak('مرحبا');spoken.at(-1).onend();assert.equal(states.at(-1).state,'ended');assert.ok(cancels>=5);
-const unavailable=createSpeech({synth:null,Utterance:null});assert.equal(unavailable.speak('Hi'),false);
-console.log('Speech tests passed: delayed voices, Arabic fallback, female preference, manual choice, language, rate, volume, cancellation, completion, errors and unsupported browser.');
+const test=require('node:test'),assert=require('node:assert/strict');
+const {speechHarness}=require('./test-support.cjs');
+test('neural engine offers five voices without native speech or eager model downloads',()=>{
+ const h=speechHarness(),s=h.create();assert.equal(s.supported,true);assert.equal(s.refresh().length,5);assert.equal(s.choose().voiceURI,'F1');s.select('F3');assert.equal(s.choose().voiceURI,'F3');s.select('unknown');assert.equal(s.choose().voiceURI,'F3');assert.equal(h.calls.loads,0);assert.equal(h.player.getAttribute('playsinline'),'');s.dispose();
+});
+test('Arabic synthesis uses selected style, current parameters and bounded playback controls',async()=>{
+ const h=speechHarness(),s=h.create();s.select('F2');assert.equal(await s.speak('مرحبا',{rate:9,volume:9}),true);assert.equal(h.calls.loads,1);assert.match(h.calls.styles[0],/F2\.json$/);assert.equal(h.calls.synthesis[0][1],'ar');assert.equal(h.calls.synthesis[0][3],6);assert.equal(h.calls.synthesis[0][4],1.5);assert.equal(h.player.volume,1);assert.equal(h.calls.play,1);assert.equal(h.states.at(-1).state,'speaking');h.player.onended();assert.equal(h.states.at(-1).state,'ended');s.dispose();assert.equal(h.calls.revoked.length,1);
+});
+test('English is rejected without a model download and disposal clears the watchdog',async()=>{
+ const h=speechHarness(),s=h.create();assert.equal(await s.speak('Hello',{lang:'en'}),false);assert.equal(h.states.at(-1).state,'missing');assert.equal(h.calls.loads,0);s.dispose();assert.equal(h.timers.size,0);
+});
+test('stop during generation prevents stale playback',async()=>{
+ let release;const pending=new Promise(r=>release=r),h=speechHarness({generate:()=>pending}),s=h.create();const speaking=s.speak('مرحبا');await h.flushUntil(()=>h.calls.synthesis.length===1);s.stop();release({wav:new Float32Array(10),duration:[.1]});assert.equal(await speaking,false);assert.equal(h.calls.play,0);assert.equal(h.timers.size,0);assert.equal(h.states.at(-1).state,'stopped');
+});
+test('autoplay denial preserves manual playback; model failure reports error without playing',async()=>{
+ const h=speechHarness({playError:true}),s=h.create();assert.equal(await s.speak('مرحبا'),true);assert.equal(h.states.at(-1).state,'starting');assert.match(h.states.at(-1).detail,/المتصفح منع/);assert(h.player.src);s.dispose();const bad=speechHarness({loadError:true}),b=bad.create();assert.equal(await b.speak('مرحبا'),false);assert.equal(bad.states.at(-1).state,'error');assert.equal(bad.calls.play,0);assert.equal(bad.timers.size,0);b.dispose();
+});

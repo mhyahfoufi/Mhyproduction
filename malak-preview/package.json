@@ -1,0 +1,11 @@
+{
+  "name": "mhy-malak-regression-tests",
+  "private": true,
+  "scripts": {
+    "test": "cd .. && node --experimental-vm-modules --test malak-preview/*.test.cjs"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12",
+    "playwright": "1.58.2"
+  }
+}

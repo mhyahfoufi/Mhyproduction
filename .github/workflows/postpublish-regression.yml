@@ -1,0 +1,28 @@
+name: Post-publication regressions — no deployment
+on:
+  push:
+    branches: [mhy-postpublish-checks-20261110]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --prefix malak-preview && npm test --prefix malak-preview
+      - run: node --test media-library/restore.test.mjs media-library/interface.test.mjs cloudflare/media-worker/test.mjs cloudflare/media-worker/upload.test.mjs
+      - run: npm ci && npm test && node --test public-worker.test.mjs
+        working-directory: cloudflare/media-platform-v2
+      - run: npx playwright install --with-deps chromium
+        working-directory: malak-preview
+      - run: node --test scripts/postpublish-browser.test.mjs
+      - name: Read-only published advertisement diagnosis
+        run: node scripts/postpublish-public-check.mjs
+      - name: Ensure runtime, works, administration and security remain identical
+        run: git diff --exit-code cf2f1c0287c965b8208a8753557871e021d407af -- assets index.html media-library media-admin cloudflare malak-preview/malak-speech.js malak-preview/malak-preview.js malak-preview/malak-knowledge.js malak-preview/index.html
