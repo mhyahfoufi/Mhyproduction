@@ -19,7 +19,13 @@ jobs:
       - run: node --test media-library/restore.test.mjs media-library/interface.test.mjs cloudflare/media-worker/test.mjs cloudflare/media-worker/upload.test.mjs
       - run: npm ci && npm test && node --test public-worker.test.mjs
         working-directory: cloudflare/media-platform-v2
-      - run: npx playwright install --with-deps chromium
+      - run: |
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright install --with-deps chromium
+          fi
         working-directory: malak-preview
       - run: node --test scripts/postpublish-browser.test.mjs
       - name: Read-only published advertisement diagnosis
