@@ -1,0 +1,6 @@
+// GET-only inventory. Never log credentials or secret values.
+const account=process.env.CLOUDFLARE_ACCOUNT_ID?.trim(),token=process.env.CLOUDFLARE_API_TOKEN?.trim();
+if(!account||!token)throw Error('Existing Cloudflare credentials unavailable');
+async function get(path){const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/'+path,{headers:{Authorization:'Bearer '+token}});const d=await r.json().catch(()=>({}));return {status:r.status,ok:r.ok&&d.success===true,result:d.result};}
+for(const name of ['mhy-media-admin-trial','mhy-media-public']){const d=await get('workers/scripts/'+name+'/settings');const b=d.result?.bindings||[];console.log(JSON.stringify({worker:name,status:d.status,bindings:b.map(x=>({name:x.name,type:x.type})),engagementEnabled:b.find(x=>x.name==='ENGAGEMENT_ENABLED')?.text==='true',privateBucketBound:b.some(x=>x.type==='r2_bucket'&&x.bucket_name==='mhyproduction-private-media')}));}
+for(const [label,path] of [['d1','d1/database?per_page=100'],['turnstile','challenges/widgets?per_page=100']]){const d=await get(path);console.log(JSON.stringify({resource:label,status:d.status,readable:d.ok,count:Array.isArray(d.result)?d.result.length:null,names:Array.isArray(d.result)?d.result.map(x=>x.name):[]}));}

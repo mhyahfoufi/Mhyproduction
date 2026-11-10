@@ -2,6 +2,7 @@ name: Post-publication regressions — no deployment
 on:
   push:
     branches: [mhy-postpublish-checks-20261110]
+    paths: ["malak-preview/**", "scripts/postpublish-browser.test.mjs", "scripts/fixtures/**"]
 permissions:
   contents: read
 jobs:
