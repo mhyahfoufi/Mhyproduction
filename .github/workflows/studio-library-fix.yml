@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: npm ci && npm test && node --test public-worker.test.mjs && npm run build
+      - run: npm ci && node --test test.mjs engagement/test.mjs public-worker.test.mjs && npm run build
         working-directory: cloudflare/media-platform-v2
       - name: Verify existing owner identity, TOTP and private storage without changing security
         run: node deploy-gate.mjs && node fix-studio-ads.mjs
@@ -35,6 +35,17 @@ jobs:
           workingDirectory: cloudflare/media-platform-v2
           wranglerVersion: '4.158.0'
           command: deploy --config release/wrangler.json
+      - name: Build public gateway with verified private-storage configuration
+        run: node build-public.mjs
+        working-directory: cloudflare/media-platform-v2
+      - name: Publish completed visitor gateway code without enabling unconfigured interactions
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: cloudflare/media-platform-v2
+          wranglerVersion: '4.158.0'
+          command: deploy --config public-release/wrangler.json
       - name: Verify existing advertisement classification without changing storage
         run: node fix-studio-ads.mjs
         working-directory: cloudflare/media-platform-v2

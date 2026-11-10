@@ -1,3 +1,4 @@
+import {mountLibraryAudience} from './audience.mjs?v=closure-1';
 import {publicBase,mergeCatalog} from './catalog.mjs?v=restore-2';
 import {sections,sectionOf,categoriesFor,normalizeSearch} from './sections.mjs';
 import {RESUME_CONSENT,RESUME_PREFIX,readResume,clearResume,saveResume,latestWorks} from './preferences.mjs';
@@ -50,7 +51,7 @@ function media(i){
   const p=el(i.kind);p.controls=true;p.preload='metadata';p.src=safeURL(i.src);if(i.kind==='video'){p.playsInline=true;resume(p,i.id,a)}
   p.onerror=()=>a.append(el('p',t('تعذّر تحميل الملف. حاول لاحقاً.','Unable to load media. Please try again.')));a.prepend(p);
  }
- if(i.source==='r2'&&i.allowDownload)a.append(link(t('تحميل','Download'),i.src+'?download=1'));return a;
+ if(i.source==='r2'&&i.allowDownload)a.append(link(t('تحميل','Download'),i.src+'?download=1'));const share=new URL(location.href);share.searchParams.delete('q');dispose.push(mountLibraryAudience(a,{item:i,mediaElement:a.querySelector('video,audio,img'),shareUrl:share.href,language:lang}));return a;
 }
 function inSection(i,category){return category==='external'?i.source==='external':category==='soon'?false:categoriesFor(category).some(c=>i.categories.includes(c))}
 function workInSection(w,category){return categoriesFor(category).some(c=>(w.categories||[]).includes(c))}

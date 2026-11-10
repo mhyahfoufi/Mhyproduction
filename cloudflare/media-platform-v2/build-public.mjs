@@ -1,8 +1,12 @@
 import {build} from 'esbuild';
+import {buildFrame} from './engagement/build-frame.mjs';
+import {legacyRegistry} from './engagement/build-registry.mjs';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 const confirmed=JSON.parse(await readFile('release/wrangler.json','utf8'));
 if(confirmed.name!=='mhy-media-admin-trial'||confirmed.vars?.PRIVATE_BUCKET_CONFIRMED!=='true'||confirmed.vars?.MFA_POLICY_CONFIRMED!=='true')throw Error('Verified storage and protected identity required');
 await mkdir('public-release',{recursive:true});
-await build({entryPoints:['public-worker.mjs'],outfile:'public-release/worker.mjs',bundle:true,format:'esm',platform:'browser',target:'es2022'});
+const {html,hash}=await buildFrame();
+const entry="import worker from './public-worker.mjs';const assets="+JSON.stringify({html,hash})+";export default {fetch(req,env,ctx){return worker.fetch(req,{...env,ENGAGEMENT_FRAME_ASSETS:assets},ctx)}};";
+await build({stdin:{contents:entry,resolveDir:process.cwd(),sourcefile:'public-entry.mjs'},outfile:'public-release/worker.mjs',bundle:true,format:'esm',platform:'browser',target:'es2022',define:{MHY_LEGACY_ITEMS:JSON.stringify(await legacyRegistry())}});
 await writeFile('public-release/wrangler.json',JSON.stringify({name:'mhy-media-public',main:'worker.mjs',compatibility_date:'2026-11-01',workers_dev:true,preview_urls:false,r2_buckets:[{binding:'MEDIA_BUCKET',bucket_name:'mhyproduction-private-media'}],vars:{PRIVATE_BUCKET_CONFIRMED:'true'}},null,2)+'\n');
 console.log('Read-only gateway built without identity settings or admin endpoints.');

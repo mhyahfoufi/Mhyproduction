@@ -1,13 +1,14 @@
-name: Library closeout — read-only resource inventory
+name: Library closeout — affected checks and resource inventory
 on:
   push:
-    branches: [mhy-postpublish-checks-20261110]
-    paths: ['scripts/closure-resources.mjs', '.github/workflows/library-closeout.yml']
+    branches: [mhy-postpublish-checks-20261110, main]
+    paths: ['scripts/closure-*', 'cloudflare/media-platform-v2/**', 'media-admin/**', 'media-library/**', '.github/workflows/library-closeout.yml']
 permissions:
   contents: read
 jobs:
   resources:
     runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
     environment: cloudflare-media
     steps:
       - uses: actions/checkout@v4
@@ -18,3 +19,22 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  affected:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --prefix cloudflare/media-platform-v2 && npm ci --prefix malak-preview
+      - run: node --test scripts/closure-server.test.mjs cloudflare/media-platform-v2/engagement/test.mjs cloudflare/media-platform-v2/public-worker.test.mjs cloudflare/media-platform-v2/deploy-gate.test.mjs media-library/interface.test.mjs
+      - run: npm run build --prefix cloudflare/media-platform-v2
+      - run: |
+          if command -v google-chrome >/dev/null; then
+            echo "CHROME_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            cd malak-preview
+            npx playwright install --with-deps chromium
+          fi
+      - run: node --test scripts/closure-browser.test.mjs

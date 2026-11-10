@@ -14,6 +14,7 @@ async function run(change={}){
  const app={id:'app',aud:'trial-aud',domain:'mhy-media-admin-trial.example.workers.dev'};
  const policy={decision:'allow',include:[{email:{email:'owner@example.com'}}],require:[],mfa_config:{mfa_disabled:false,allowed_authenticators:['totp']}};
  const responses={users:[{id:'owner-id',email:vars.ADMIN_EMAIL}],identity:{email:vars.ADMIN_EMAIL,user_uuid:vars.ADMIN_SUB},settings,apps:[app],policies:[policy],managed:{enabled:false},custom:{domains:[]}};
+ if(change.existingEngagement)settings.bindings.push({name:'ENGAGEMENT_DB',type:'d1',id:'existing-database'});
  if(change.noIdentity)responses.identity={};
  if(change.wrongIdentity)responses.identity.email='stranger@example.com';
  if(change.ambiguousOwner)responses.users.push({...responses.users[0]});
@@ -46,3 +47,5 @@ test('deployment gate writes verified existing trial identity only after every c
 });
 
 test('bootstrap resolves only trusted owner and derives confirmation flags from verified controls',async()=>{const r=await run({bootstrap:true});assert.equal(r.status,0,r.output);assert.equal(r.config.vars.ADMIN_SUB,'11111111-1111-1111-1111-111111111111');assert.equal(r.config.vars.PRIVATE_BUCKET_CONFIRMED,'true')});
+
+test('deployment refuses to remove existing interaction bindings',async()=>{const r=await run({existingEngagement:true});assert.equal(r.status,1);assert.match(r.output,/Existing engagement resources must be preserved/);});

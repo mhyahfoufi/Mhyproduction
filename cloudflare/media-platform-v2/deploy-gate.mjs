@@ -17,6 +17,8 @@ try{
  if(!token||!/^[a-f0-9]{32}$/i.test(account))fail('Existing Cloudflare credentials unavailable');
  const settings=await api('workers/scripts/mhy-media-admin-trial/settings');
  if(!settings.bindings?.some(b=>b.type==='r2_bucket'&&b.name==='MEDIA_BUCKET'&&b.bucket_name==='mhyproduction-private-media'))fail('Existing private R2 binding mismatch');
+ const publicSettings=await api('workers/scripts/mhy-media-public/settings');
+ for(const current of [settings,publicSettings])if(current.bindings?.some(b=>b.name==='ENGAGEMENT_ENABLED'&&b.text==='true'||b.type==='d1'||['ENGAGEMENT_COOKIE_SECRET','TURNSTILE_SECRET'].includes(b.name)))fail('Existing engagement resources must be preserved; automatic disabled release refused');
  const apps=await api('access/apps?per_page=100');
  console.log('ACCESS_API_READABLE=true');
  console.log('TRIAL_ACCESS_APPLICATIONS='+ (Array.isArray(apps)?apps.filter(a=>/^mhy-media-admin-trial\.[a-z0-9-]+\.workers\.dev$/.test(a.domain||'')).length:0));

@@ -14,6 +14,7 @@ class Storage {
 class Element {
  children=[];dataset={};attributes={};events=new Map();value='';checked=false;_text='';
  constructor(tag,doc){this.tagName=tag.toUpperCase();this.doc=doc;this.currentTime=0;this.duration=120;this.ended=false;this.playCalls=0}
+ querySelector(selector){const tags=selector.toUpperCase().split(',');const find=n=>{for(const c of n.children||[])if(typeof c!=='string'){if(tags.includes(c.tagName))return c;const nested=find(c);if(nested)return nested}return null};return find(this)}
  set textContent(s){this._text=String(s);this.children=[]}get textContent(){return this._text+this.children.map(x=>typeof x==='string'?x:x.textContent).join('')}
  set href(s){this.attributes.href=s}get href(){return new URL(this.attributes.href||'',this.doc.context.location.href).href}
  set className(s){this.attributes.class=s}get className(){return this.attributes.class||''}
@@ -45,7 +46,7 @@ async function page({url='https://preview.example/media-library/',remote=[],fail
  const location={get href(){return currentURL.href},get hash(){return currentURL.hash},get origin(){return currentURL.origin},set hash(value){const next=new URL(currentURL);next.hash=value;if(next.href===currentURL.href)return;currentURL=next;context.scrollY=0;emit('scroll');emit('hashchange')}};
  function emit(name){for(const fn of events.get(name)||[])fn()}
  const history={scrollRestoration:'auto',state:null,replaceState(state,unused,url){this.state=state;currentURL=new URL(url,currentURL)}};
- context={document:doc,location,history,localStorage:local,sessionStorage:session,scrollY:0,URL,AbortSignal,Date,console,...catalogModule,...sectionModule,...preferenceModule,
+ context={mountLibraryAudience:()=>()=>{},document:doc,location,history,localStorage:local,sessionStorage:session,scrollY:0,URL,AbortSignal,Date,console,...catalogModule,...sectionModule,...preferenceModule,
   fetch:async()=>{if(failure)throw Error('Offline fixture');return {ok:true,json:async()=>({items:remote})}},
   requestAnimationFrame(fn){frames.push(fn)},scrollTo(x,y){context.scrollY=y;emit('scroll')}};
  context.window=context;context.addEventListener=(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn)};doc.context=context;

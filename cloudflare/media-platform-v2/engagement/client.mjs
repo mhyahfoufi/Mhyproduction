@@ -1,6 +1,6 @@
 // Optional module. Do not load on the public site until the admin/R2/D1 launch gate passes.
 const E=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n};
-export async function mountAudience(parent,{itemId,kind='video',source='r2',mediaElement=null,shareUrl=location.href,language='ar',turnstileToken}){
+export async function mountAudience(parent,{itemId,kind='video',source='r2',mediaElement=null,shareUrl=location.href,language='ar',turnstileToken,embedded=false}){
  const t=(ar,en)=>language==='ar'?ar:en;const base='/api/engagement/'+encodeURIComponent(itemId);let sessionReady=false;
  async function request(url,body){const r=await fetch(url,{method:body?'POST':'GET',credentials:'same-origin',headers:body?{'Content-Type':'application/json','X-MHY-Interaction':'1'}:{},body:body?JSON.stringify(body):undefined});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||t('التفاعل غير متاح حالياً','Interaction unavailable'));return d}
  let initial;try{initial=await request(base)}catch{return null} // No fake counts or enabled controls without the database.
@@ -12,9 +12,10 @@ export async function mountAudience(parent,{itemId,kind='video',source='r2',medi
  up.onclick=()=>act(()=>react(1));down.onclick=()=>act(()=>react(-1));share.onclick=()=>act(async()=>{const url=new URL(shareUrl,location.href);if(!['https:','http:'].includes(url.protocol))return;if(navigator.share)await navigator.share({title:document.title,url:url.href});else{await navigator.clipboard.writeText(url.href);status.textContent=t('تم نسخ الرابط','Link copied')}});
  form.onsubmit=e=>{e.preventDefault();act(async()=>{await identity();const token=await turnstileToken('comment');await request(base+'/comment',{body:text.value,token});text.value='';status.textContent=t('وصل تعليقك، سيظهر بعد موافقة الإدارة','Received; your comment appears after moderation')})};more.onclick=()=>act(async()=>{offset+=30;show(await request(base+'?offset='+offset),true)});show(initial);
  // No page-open counter. Accumulate visible playback; never call this a completed watch.
- let active=0,last=0,recorded=false;const eventKind=source==='external'?'external_open':kind==='audio'?'listen':kind==='image'?'image_view':'play';
- async function record(){if(recorded)return;try{await identity();await request(base+'/event',{kind:eventKind,activeSeconds:active});recorded=true;show(await request(base))}catch{/* A user gesture may be needed for verification; no fabricated increment. */}}
- const observed=mediaElement||root;const visibility=new IntersectionObserver(entries=>{for(const e of entries)if(e.target===observed)root.dataset.visible=e.isIntersecting?'yes':'no'},{threshold:.5});visibility.observe(observed);identity().catch(()=>{});
- const timer=setInterval(()=>{const now=performance.now();if(last&&document.visibilityState==='visible'&&root.dataset.visible==='yes'&&(kind==='image'||mediaElement&&!mediaElement.paused&&!mediaElement.ended))active+=Math.min(1.5,(now-last)/1000);last=now;if(!recorded&&source!=='external'&&active>=(kind==='image'?3:10)&&sessionReady)record()},1000);
- return {externalOpened:()=>source==='external'&&record(),destroy:()=>{clearInterval(timer);visibility.disconnect();root.remove()}};
+ let active=0,last=0,recorded=false,recording=false,retryAt=0;const eventKind=source==='external'?'external_open':kind==='audio'?'listen':kind==='image'?'image_view':'play';
+ async function record(){if(recorded||recording||Date.now()<retryAt)return;recording=true;try{await identity();await request(base+'/event',{kind:eventKind,activeSeconds:active});recorded=true;show(await request(base))}catch{retryAt=Date.now()+10000;}finally{recording=false;}}
+ const observed=mediaElement||root;const visibility=new IntersectionObserver(entries=>{for(const e of entries)if(e.target===observed)root.dataset.visible=e.isIntersecting?'yes':'no'},{threshold:.5});visibility.observe(observed);// Verification begins on visitor intent or a qualified playback event, never for a page-open count.
+
+ const timer=setInterval(()=>{const now=performance.now();if(last&&document.visibilityState==='visible'&&root.dataset.visible==='yes'&&(kind==='image'||mediaElement&&!mediaElement.paused&&!mediaElement.ended))active+=Math.min(1.5,(now-last)/1000);last=now;if(!embedded&&!recorded&&source!=='external'&&active>=(kind==='image'?3:10))record()},1000);
+ return {recordQualified:seconds=>{if(embedded&&Number.isFinite(seconds)&&seconds>=(kind==='image'?3:10)){active=Math.min(seconds,86400);return record()}},externalOpened:()=>source==='external'&&record(),destroy:()=>{clearInterval(timer);visibility.disconnect();root.remove()}};
 }
