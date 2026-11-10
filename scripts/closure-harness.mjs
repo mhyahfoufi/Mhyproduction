@@ -28,5 +28,5 @@ export async function fixture({engagement=true}={}){
  return{env,bucket,db,worker,publicWorker,legacy};
 }
 export function adminRequest(c,path,method='GET',data,origin='https://admin.test'){
- return c.worker.fetch(new Request(origin+path,{method,headers:{Cookie:'test_admin=1',Origin:origin,'X-MHY-Admin':'1',...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined}),c.env);
+ return c.worker.fetch(new Request(origin+path,{method,headers:{Cookie:'test_admin=1',Origin:origin,'X-MHY-Admin':'1','X-MHY-Interaction':'1',...(data?{'Content-Type':'application/json'}:{})},body:data?JSON.stringify(data):undefined}),c.env);
 }
