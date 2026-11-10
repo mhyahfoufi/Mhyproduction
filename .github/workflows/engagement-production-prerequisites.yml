@@ -1,0 +1,21 @@
+name: Verify interaction production prerequisites
+on:
+  push:
+    branches: [mhy-postpublish-checks-20261110]
+    paths: ['.github/workflows/engagement-production-prerequisites.yml']
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    environment: cloudflare-media
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Read existing resources without changing security or data
+        run: node scripts/closure-resources.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
