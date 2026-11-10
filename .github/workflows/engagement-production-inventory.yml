@@ -1,0 +1,23 @@
+name: Verify interaction production prerequisites
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/engagement-production-inventory.yml']
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    environment: cloudflare-media
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a3bd3084bfb0c40b3304b7a00379eb9a4b83ced5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Read existing resources without changing security or data
+        run: node scripts/closure-resources.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
